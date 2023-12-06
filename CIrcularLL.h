@@ -402,12 +402,12 @@ public:
 		}
 	}
 
-	T exists(const T& value)
+	bool exists(const T& value)
 	{
-
+		if (isEmpty()) return false;
 		CircleListNode<T>* current = head;
 
-		while (current != nullptr)
+		while (current->next != head)
 		{
 
 			if (current->data == value)
@@ -418,7 +418,7 @@ public:
 
 			current = current->next;
 		}
-
+		if (current->data == value) return true;
 		return false;
 	}
 

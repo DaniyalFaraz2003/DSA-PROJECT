@@ -2,7 +2,6 @@
 #ifndef MACHINE_H
 #define MACHINE_H
 
-
 #include <iostream>
 #include "BTree.h"
 #include "BigInt.h"
@@ -12,6 +11,7 @@ template <class T, class U>
 struct KeyValuePair {
 	T key;
 	U value;
+
 	bool operator<(const KeyValuePair& other) {
 		return this->key < other.key;
 	}
@@ -19,11 +19,12 @@ struct KeyValuePair {
 
 class Machine
 {
-	BTree<KeyValuePair<BIG_INT, LinkedList<string>>> indexTree;
-	string name;
 	BIG_INT id;
+	string name;
+	BTree<KeyValuePair<BIG_INT, LinkedList<string>>> indexTree;
 	DoublyLinkedList<Machine*> router;
 public:
+	
 	Machine(BIG_INT id) { 
 		this->id = id;
 	}
@@ -50,6 +51,9 @@ public:
 		return out;
 	}
 
+	BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>* getBtreeHead() {
+		return indexTree.getRoot();
+	}
 
 	void addRoutingTableEntry(Machine* val) {
 		router.push(val);

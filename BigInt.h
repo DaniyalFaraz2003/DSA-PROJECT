@@ -210,13 +210,13 @@ public:
     }
     bool operator<=(const BIG_INT& other)
     {
-        if ((this->bigInt < other.bigInt) || (this->bigInt == other.bigInt))
+        if ((*this < other) || (*this == other))
             return true;
         return false;
     }
     bool operator>=(const BIG_INT& other)
     {
-        if ((this->bigInt > other.bigInt) || (this->bigInt == other.bigInt))
+        if ((*this > other) || (*this == other))
             return true;
         return false;
     }

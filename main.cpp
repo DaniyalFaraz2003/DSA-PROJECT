@@ -26,8 +26,8 @@ using namespace std;
 //        B.insert(i);
 //    }*/
 //
-//    B.deleteNode(9);
-//    B.showTree();
+//    //B.deleteNode(9);
+//    visualizeTree(generateDotCode(B.getRoot()));
 //    return 0;
 //}
 
@@ -63,12 +63,16 @@ using namespace std;
 //}
 
 int main() {
-	DHT sys;
-	sys.makeRoutingTables();
-	auto ptr = sys.ring.head;
-	while (!(ptr->data.getId() == BIG_INT("18"))) ptr = ptr->next;
-	ptr->data.printRoutingTable();
+	DHT sys(4);
 
-	
+	sys.insertMachine();
+	sys.insertMachine();
+	sys.insertMachine();
+	cout << sys.ring;
+
+	/*auto ptr = sys.ring.head;
+	while (!(ptr->data.getId() == BIG_INT("163"))) ptr = ptr->next;
+	ptr->data.printRoutingTable();*/
+
 	return 0;
 }

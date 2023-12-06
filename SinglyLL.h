@@ -16,14 +16,18 @@ public:
 template <typename T>
 class LinkedList
 {
-
+	int size = 0;
 	ListNode<T>* head;
 
 public:
 	LinkedList() : head(nullptr) {}
 	LinkedList(const LinkedList<T>& other)
 	{
-		if (other.head == nullptr) return;
+		if (other.head == nullptr) {
+			this->size = other.size;
+			this->head = nullptr; return;
+		};
+		this->size = other.size;
 		this->head = new ListNode<T>(other.head->data);
 		ListNode<T>* curr = other.head->next;
 		ListNode<T>* Next = this->head;
@@ -37,7 +41,12 @@ public:
 
 	LinkedList<T> operator=(const LinkedList<T>& other)
 	{
-		if (other.head == nullptr) return;
+		if (other.head == nullptr) {
+			this->size = other.size;
+			makenull(); this->head = nullptr; return *this;
+		};
+		makenull();
+		this->size = other.size;
 		this->head = new ListNode<T>(other.head->data);
 		ListNode<T>* curr = other.head->next;
 		ListNode<T>* Next = this->head;
@@ -131,6 +140,7 @@ public:
 
 			temp->next = newNode;
 		}
+		size++;
 	}
 
 	void push_front(T value)
@@ -139,6 +149,7 @@ public:
 		ListNode<T>* newNode = new ListNode<T>(value);
 		newNode->next = head;
 		head = newNode;
+		size++;
 	}
 
 	T pop_front()
@@ -148,6 +159,7 @@ public:
 		{
 
 			cout << "List is empty \n";
+			return T();
 		}
 
 		ListNode<T>* temp = head;
@@ -156,6 +168,7 @@ public:
 		value = temp->data;
 		head = head->next;
 
+		size--;
 		delete temp;
 		return value;
 	}
@@ -167,6 +180,7 @@ public:
 		{
 
 			cout << "List is empty \n";
+			return T();
 		}
 
 		if (head->next == nullptr)
@@ -174,7 +188,7 @@ public:
 
 			T val = head->data;
 			delete head;
-
+			size--;
 			head = nullptr;
 			return val;
 		}
@@ -191,7 +205,7 @@ public:
 
 		T val = currNode->data;
 		delete currNode;
-
+		size--;
 		prevNode->next = nullptr;
 		return val;
 	}
@@ -212,6 +226,7 @@ public:
 
 			newNode->next = head;
 			head = newNode;
+			size++;
 		}
 
 		else
@@ -234,6 +249,7 @@ public:
 
 			newNode->next = current->next;
 			current->next = newNode;
+			size++;
 		}
 	}
 
@@ -246,6 +262,7 @@ public:
 		{
 
 			cout << "Index is invalid or the list is empty \n";
+			return T();
 		}
 
 		if (index == 0)
@@ -254,7 +271,7 @@ public:
 			ListNode<T>* tempNode = head;
 			value = tempNode->data;
 			head = head->next;
-
+			size--;
 			delete tempNode;
 			return value;
 		}
@@ -281,7 +298,7 @@ public:
 
 			value = current->data;
 			prevNode->next = current->next;
-
+			size--;
 			delete current;
 			return value;
 		}
@@ -289,7 +306,7 @@ public:
 
 	void makenull()
 	{
-
+		if (head == nullptr) return;
 		ListNode<T>* next;
 		ListNode<T>* current = head;
 
@@ -300,7 +317,7 @@ public:
 			delete current;
 			current = next;
 		}
-
+		size = 0;
 		head = nullptr;
 	}
 
@@ -375,6 +392,10 @@ public:
 		}
 		out << endl;
 		return out;
+	}
+
+	int getSize() {
+		return this->size;
 	}
 
 	~LinkedList() {

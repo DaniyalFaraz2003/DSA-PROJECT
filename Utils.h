@@ -104,3 +104,70 @@ string generateDotCode(BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>* btr
     dotCode += "}\n";
     return dotCode;
 }
+
+BIG_INT hashMod(string hash, int n)
+{
+    string result = "";
+    string binaries[16] = { "0000",
+                           "0001",
+                           "0010",
+                           "0011",
+                           "0100",
+                           "0101",
+                           "0110",
+                           "0111",
+                           "1000",
+                           "1001",
+                           "1010",
+                           "1011",
+                           "1100",
+                           "1101",
+                           "1110",
+                           "1111" };
+    for (int i = hash.length() - 1; i >= 0; i--)
+    {
+        if (result.length() >= n)
+            break;
+        if (hash[i] >= 'a' && hash[i] <= 'f')
+        {
+            switch (hash[i])
+            {
+            case 'a':
+                result = binaries[10] + result;
+                break;
+            case 'b':
+                result = binaries[11] + result;
+                break;
+            case 'c':
+                result = binaries[12] + result;
+                break;
+            case 'd':
+                result = binaries[13] + result;
+                break;
+            case 'e':
+                result = binaries[14] + result;
+                break;
+            case 'f':
+                result = binaries[15] + result;
+                break;
+            }
+        }
+        else
+            result = binaries[hash[i] - '0'] + result;
+    }
+    if (n < result.length())
+        result = result.substr(result.length() - n);
+    BIG_INT decimal("0");
+    BIG_INT power("1");
+    // Iterate through the binary string from right to left
+    for (int i = result.length() - 1; i >= 0; --i)
+    {
+        if (result[i] == '1')
+        {
+            decimal = decimal + power;
+        }
+        // Update the power for the next bit position
+        power = power * BIG_INT("2");
+    }
+    return decimal;
+}

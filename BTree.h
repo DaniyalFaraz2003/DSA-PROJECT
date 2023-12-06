@@ -43,7 +43,7 @@ public:
         t = degree;
     }
 
-    Pair<BTreeNode<T>*, int, int> search(int key, BTreeNode<T>* node = nullptr, int childIndex = 0)
+    Pair<BTreeNode<T>*, int, int> search(T key, BTreeNode<T>* node = nullptr, int childIndex = 0)
     {
         node = (node == nullptr) ? root : node;
 
@@ -99,7 +99,7 @@ public:
         }
     }
 
-    void insert(int k)
+    void insert(T k)
     {
         BTreeNode<T>* r = root;
         if (r->keys.getSize() == (2 * t) - 1)
@@ -118,13 +118,13 @@ public:
         }
     }
 
-    void insertNonFull(BTreeNode<T>* x, int k)
+    void insertNonFull(BTreeNode<T>* x, T k)
     {
         int i = x->keys.getSize() - 1;
 
         if (x->leaf)
         {
-            x->keys.push(0); // Extend the vector to make room for the new key
+            x->keys.push(T()); // Extend the vector to make room for the new key
             while (i >= 0 && k < x->keys[i])
             {
                 x->keys[i + 1] = x->keys[i];
@@ -152,7 +152,7 @@ public:
         }
     }
 
-    void deleteNode(int val)
+    void deleteNode(T val)
     {
         Pair<BTreeNode<T>*, int, int> res = search(val);
         if (res.first == nullptr)

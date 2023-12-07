@@ -76,7 +76,9 @@ int main() {
 	for (int i : {1, 43, 5, 6, 23, 7, 87, 8, 4, 3, 50, 8}) {
 		m.addFile(BIG_INT(to_string(i)), "daniyal");
 	}
-	m.removeFile(BIG_INT(), "daniyal");
+	m.removeFile(BIG_INT("8"), "daniyal");
+	auto res = m.searchFile(BIG_INT("8"), "daniyal");
+	cout << res.first->keys[res.second].value << endl;
 	visualizeTree(generateDotCode(m.getBtreeHead()));
 	return 0;
 }

@@ -1,8 +1,29 @@
 #pragma once
 #include <iostream>
 #include <string>
-#include "Utils.h"
 using namespace std;
+
+// Returns true if s1 is substring of s2
+bool isSubstring(string s1, string s2)
+{
+	int M = s1.length();
+	int N = s2.length();
+
+
+	for (int i = 0; i <= N - M; i++) {
+		int j;
+
+
+		for (j = 0; j < M; j++)
+			if (s2[i + j] != s1[j])
+				break;
+
+		if (j == M)
+			return true;
+	}
+
+	return false;
+}
 
 template <typename T>
 class ListNode
@@ -399,9 +420,10 @@ public:
 	int getSize() {
 		return this->size;
 	}
-	template <class string>
-	void deleteNodeByString(const string& s) {
-		if (isEmpty() || index < 0)
+
+	template <typename string>
+	void deleteNodeByString(const string filename) {
+		if (isEmpty())
 		{
 			cout << "Index is invalid or the list is empty \n";
 			return;
@@ -409,7 +431,6 @@ public:
 		if (isSubstring(filename, head->data))
 		{
 			ListNode<string>* tempNode = head;
-			value = tempNode->data;
 			head = head->next;
 			size--;
 			delete tempNode;
@@ -419,7 +440,7 @@ public:
 		{
 			ListNode<string>* current = head;
 			ListNode<string>* prevNode = nullptr;
-			for (int i = 0; !isSubstring(filename, current.data) && current != nullptr; ++i)
+			for (int i = 0; current != nullptr && !isSubstring(filename, current->data); ++i)
 			{
 				prevNode = current;
 				current = current->next;
@@ -429,11 +450,9 @@ public:
 				cout << "Index is invalid \n";
 				return;
 			}
-			value = current->data;
 			prevNode->next = current->next;
 			size--;
 			delete current;
-			return value;
 		}
 	}
 

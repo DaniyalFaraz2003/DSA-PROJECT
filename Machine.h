@@ -108,7 +108,7 @@ public:
 		// and add the actual file to the path too.
 	}
 
-	void removeFile(BIG_INT id, string filename) {
+	void removeFile(BIG_INT id) {
 		KeyValuePair<BIG_INT, LinkedList<string>> data; data.key = id;
 		Pair<BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>*, int, int> res = indexTree.search(data);
 		if (res.first == nullptr) return; // if not there so return
@@ -116,12 +116,25 @@ public:
 			indexTree.deleteNode(data);
 		}
 		else { // here multiple values of this id so delete from its chain
-			res.first->keys[res.second].value.deleteNodeByString(filename);
+			int count = 0;
+			cout << "These are the files with this id: " << endl;
+			for (LinkedList<string>::Iterator it = res.first->keys[res.second].value.begin(); it != res.first->keys[res.second].value.end(); ++it) {
+				cout << ++count << ". " << *it << endl;
+			}
+			int choice;
+			cout << "Enter which file to delete: "; cin >> choice;
+			if (choice - 1 <= res.first->keys[res.second].value.getSize()) {
+				res.first->keys[res.second].value.delete_from_index(choice);
+				cout << res.first->keys[res.second].value;
+			}
+			else {
+				cout << "invalid choice entered" << endl;
+			}
 		}
 		
 	}
 
-	Pair<BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>*, int, int> searchFile(BIG_INT id, string filename) {
+	Pair<BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>*, int, int> searchFile(BIG_INT id) {
 		KeyValuePair<BIG_INT, LinkedList<string>> data; data.key = id;
 		Pair<BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>*, int, int> res = indexTree.search(data);
 		return res;

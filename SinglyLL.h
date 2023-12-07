@@ -189,7 +189,6 @@ public:
 
 		value = temp->data;
 		head = head->next;
-
 		size--;
 		delete temp;
 		return value;
@@ -280,14 +279,14 @@ public:
 
 		T value;
 
-		if (isEmpty() || index < 0)
+		if (isEmpty() || index <= 0)
 		{
 
 			cout << "Index is invalid or the list is empty \n";
 			return T();
 		}
 
-		if (index == 0)
+		if (index == 1)
 		{
 
 			ListNode<T>* tempNode = head;

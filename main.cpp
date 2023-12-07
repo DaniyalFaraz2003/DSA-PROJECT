@@ -63,16 +63,20 @@ using namespace std;
 //}
 
 int main() {
-	DHT sys(4);
+	/*DHT sys(5);
 
-	sys.insertMachine();
-	sys.insertMachine();
-	sys.insertMachine();
+	sys.makeRoutingTables();
 	cout << sys.ring;
 
-	/*auto ptr = sys.ring.head;
-	while (!(ptr->data.getId() == BIG_INT("163"))) ptr = ptr->next;
+	auto ptr = sys.ring.head;
+	while (!(ptr->data.getId() == BIG_INT("19"))) ptr = ptr->next;
 	ptr->data.printRoutingTable();*/
 
+	Machine m(BIG_INT("12784"));
+	for (int i : {1, 43, 5, 6, 23, 7, 87, 8, 4, 3, 50, 8}) {
+		m.addFile(BIG_INT(to_string(i)), "daniyal");
+	}
+	m.removeFile(BIG_INT(), "daniyal");
+	visualizeTree(generateDotCode(m.getBtreeHead()));
 	return 0;
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <string>
+#include "Utils.h"
 using namespace std;
 
 template <typename T>
@@ -321,6 +322,7 @@ public:
 		head = nullptr;
 	}
 
+
 	T search(const T& value)
 	{
 
@@ -396,6 +398,43 @@ public:
 
 	int getSize() {
 		return this->size;
+	}
+	template <class string>
+	void deleteNodeByString(const string& s) {
+		if (isEmpty() || index < 0)
+		{
+			cout << "Index is invalid or the list is empty \n";
+			return;
+		}
+		if (isSubstring(filename, head->data))
+		{
+			ListNode<string>* tempNode = head;
+			value = tempNode->data;
+			head = head->next;
+			size--;
+			delete tempNode;
+			return;
+		}
+		else
+		{
+			ListNode<string>* current = head;
+			ListNode<string>* prevNode = nullptr;
+			for (int i = 0; !isSubstring(filename, current.data) && current != nullptr; ++i)
+			{
+				prevNode = current;
+				current = current->next;
+			}
+			if (current == nullptr)
+			{
+				cout << "Index is invalid \n";
+				return;
+			}
+			value = current->data;
+			prevNode->next = current->next;
+			size--;
+			delete current;
+			return value;
+		}
 	}
 
 	~LinkedList() {

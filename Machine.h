@@ -109,11 +109,22 @@ public:
 	}
 
 	void removeFile(BIG_INT id, string filename) {
+		KeyValuePair<BIG_INT, LinkedList<string>> data; data.key = id;
+		Pair<BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>*, int, int> res = indexTree.search(data);
+		if (res.first == nullptr) return; // if not there so return
+		if (res.first->keys[res.second].value.getSize() == 1) { // only one value of this hash so delete the whole key
+			indexTree.deleteNode(data);
+		}
+		else { // here multiple values of this id so delete from its chain
+			res.first->keys[res.second].value.deleteNodeByString(filename);
+		}
 		
 	}
 
-	void searchFile() {
-
+	Pair<BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>*, int, int> searchFile(BIG_INT id, string filename) {
+		KeyValuePair<BIG_INT, LinkedList<string>> data; data.key = id;
+		Pair<BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>*, int, int> res = indexTree.search(data);
+		return res;
 	}
 };
 

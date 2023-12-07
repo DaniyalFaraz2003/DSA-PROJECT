@@ -16,6 +16,10 @@ public:CircularLinkedList<Machine> ring;
 public:
 	DHT(int bitSize = 0) {
         this->identifierSpace = bitSize;
+
+        /*for (int i : {1, 2, 3, 5, 8, 11, 19, 20, 28}) {
+            this->ring.insertSorted(Machine(BIG_INT(to_string(i))));
+        }*/
 	}
    
 	void makeRoutingTables() {

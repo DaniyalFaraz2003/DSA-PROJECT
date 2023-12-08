@@ -94,6 +94,7 @@ public:
     void setLeafNodes() {
         Queue<BTreeNode<T>*> levelOrderQueue;
         levelOrderQueue.enqueue(root);
+        root->p = nullptr;
         while (!levelOrderQueue.isEmpty()) {
             BTreeNode<T>* current = levelOrderQueue.head();
             levelOrderQueue.dequeue();

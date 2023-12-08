@@ -3,6 +3,7 @@
 #define MACHINE_H
 
 #include <iostream>
+#include <fstream>
 #include "BTree.h"
 #include "BigInt.h"
 using namespace std;
@@ -27,6 +28,7 @@ struct KeyValuePair {
 	bool operator>=(const KeyValuePair& other) {
 		return this->key >= other.key;
 	}
+
 };
 
 class Machine
@@ -35,6 +37,70 @@ class Machine
 	string name;
 	BTree<KeyValuePair<BIG_INT, LinkedList<string>>> indexTree;
 	DoublyLinkedList<Machine*> router;
+
+	// some private functions
+	string getExtension(const string filename) {
+		string res; int i;
+		for (i = filename.length() - 1; i >= 0; i--) {
+			if (filename[i] == '.') break;
+		}
+		for (i; i < filename.length(); i++) {
+			res += filename[i];
+		}
+		return res;
+	}
+
+
+	void visualizeTree(const string& dotCode)
+	{
+		ofstream dotFile("btree.dot");
+		dotFile << dotCode;
+		dotFile.close();
+		string command = "dot -Tpng btree.dot -o btree.png";
+		system(command.c_str());
+		system("start btree.png");
+	}
+
+	string generateDotCode(BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>* btreeRoot)
+	{
+		string dotCode = "digraph BTree {\n";
+		dotCode += "\tnode [shape=record, height=.1];\n\n";
+
+		Queue<BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>*> levelOrderQueue;
+		Queue<int> idQ;
+		levelOrderQueue.enqueue(btreeRoot);
+		int count = 0;
+		idQ.enqueue(count);
+		while (!levelOrderQueue.isEmpty())
+		{
+			BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>* current = levelOrderQueue.head();
+			levelOrderQueue.dequeue();
+			int j = idQ.dequeue();
+
+			dotCode += "\tnode" + to_string(j) + " [label=\"";
+			for (int i = 0; i < current->keys.getSize(); i++)
+			{
+				dotCode += "|" + current->keys[i].key.getBIG_INT();
+			}
+			dotCode += "|\"];\n";
+
+			for (size_t i = 0; i < current->children.getSize(); ++i)
+			{
+				count++;
+				dotCode += "\tnode" + to_string(j) + " -> node" + to_string(count) + ";\n";
+				if (current->children[i]->p == current)
+				{
+					dotCode += "\tnode" + to_string(count) + " -> node" + to_string(j) + ";\n";
+				}
+				idQ.enqueue(count);
+				levelOrderQueue.enqueue(current->children[i]);
+			}
+		}
+
+		dotCode += "}\n";
+		return dotCode;
+	}
+
 public:
 	
 	Machine(BIG_INT id, string name = "", int treeDegree = 3) {
@@ -92,12 +158,12 @@ public:
 		}
 	}
 
-	void addFile(BIG_INT id, const string& filename) {
+	void addFile(BIG_INT id, string extension, const string& filename = "") {
 		KeyValuePair<BIG_INT, LinkedList<string>> data; data.key = id; 
-		string path = name + "/" + id.getBIG_INT() + "/";
+		string path = "D:\\DHT\\" + name + "\\" + id.getBIG_INT() + "\\";
 		Pair<BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>*, int, int> res = indexTree.search(data);
 		if (res.first == nullptr) { // if this id is not already present then just insert the node
-			path += filename + "_file_" + to_string(data.value.getSize());
+			path += "file_" + id.getBIG_INT() + '_' + to_string(data.value.getSize()) + extension;
 			data.value.push(path);
 			indexTree.insert(data);
 		}
@@ -131,13 +197,97 @@ public:
 				cout << "invalid choice entered" << endl;
 			}
 		}
-		
 	}
 
 	Pair<BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>*, int, int> searchFile(BIG_INT id) {
 		KeyValuePair<BIG_INT, LinkedList<string>> data; data.key = id;
 		Pair<BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>*, int, int> res = indexTree.search(data);
 		return res;
+	}
+
+	void printBtree() {
+		Queue<BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>*> levelOrderQueue;
+		levelOrderQueue.enqueue(this->indexTree.getRoot());
+		while (!levelOrderQueue.isEmpty())
+		{
+			BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>* current = levelOrderQueue.head();
+			levelOrderQueue.dequeue();
+
+			for (int i = 0; i < current->keys.getSize(); i++)
+			{
+				// here we need to move files too but that is later work
+				cout << "key: " << current->keys[i].key << endl;
+				cout << "value: " << current->keys[i].value << endl;
+				cout << endl;
+			}
+
+			for (size_t i = 0; i < current->children.getSize(); ++i)
+			{
+				levelOrderQueue.enqueue(current->children[i]);
+			}
+		}
+		visualizeTree(generateDotCode(indexTree.getRoot()));
+	}
+
+	void shiftFiles(char mode, Machine& other) {
+		if (mode == 'i') { // if insert is mode then we add other's files with id e where e <= currentMachineId
+			BIG_INT thisId = id;
+			BIG_INT nextId = other.getId();
+			// now we do level order traversal of others Btree and insert these files in this's Btree
+			ArrayBasedList<KeyValuePair<BIG_INT, LinkedList<string>>> dataToBeDeleted;
+			Queue<BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>*> levelOrderQueue;
+			levelOrderQueue.enqueue(other.indexTree.getRoot());
+			while (!levelOrderQueue.isEmpty())
+			{
+				BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>* current = levelOrderQueue.head();
+				levelOrderQueue.dequeue();
+
+				for (int i = 0; i < current->keys.getSize(); i++)
+				{
+					if (current->keys[i].key <= thisId) {
+						// here we need to move files too but that is later work
+						dataToBeDeleted.push(current->keys[i]);
+						for (LinkedList<string>::Iterator it = current->keys[i].value.begin(); it != current->keys[i].value.end(); ++it) {
+							//addFile(current->keys[i].key, getExtension(*it));
+							addFile(current->keys[i].key, ".txt");
+						}
+					}
+				}
+				
+				for (size_t i = 0; i < current->children.getSize(); ++i)
+				{
+					levelOrderQueue.enqueue(current->children[i]);
+				}
+			}
+			for (int i = 0; i < dataToBeDeleted.getSize(); i++) {
+				other.indexTree.deleteNode(dataToBeDeleted[i]);
+			}
+		}
+		else if (mode == 'd') { // if delete is mode then we empty this machines files into other
+			// now we do level order traversal of others Btree and insert these files in this's Btree
+			Queue<BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>*> levelOrderQueue;
+			levelOrderQueue.enqueue(this->indexTree.getRoot());
+			while (!levelOrderQueue.isEmpty())
+			{
+				BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>* current = levelOrderQueue.head();
+				levelOrderQueue.dequeue();
+
+				for (int i = 0; i < current->keys.getSize(); i++)
+				{
+					// here we need to move files too but that is later work
+					for (LinkedList<string>::Iterator it = current->keys[i].value.begin(); it != current->keys[i].value.end(); ++it) {
+						//other.addFile(current->keys[i].key, getExtension(*it));
+						other.addFile(current->keys[i].key, ".txt");
+					}
+					
+				}
+
+				for (size_t i = 0; i < current->children.getSize(); ++i)
+				{
+					levelOrderQueue.enqueue(current->children[i]);
+				}
+			}
+		}
 	}
 };
 

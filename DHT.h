@@ -90,10 +90,29 @@ public:
         }
         ring.insertSorted(Machine(machineId)); // here we update the Btrees too. and to make a folder in the system for this machine
         makeRoutingTables();
+        CircleListNode<Machine>* current = ring.head;
+        while (!(current->data.getId() == machineId)) {
+            current = current->next;
+        }
+        current->data.shiftFiles('i', current->next->data);
         
     }
-    void removeMachine() { // implementation to be done.
-
+    void removeMachine(BIG_INT id) { // implementation to be done.
+        if (!ring.exists(Machine(id))) {
+            cout << "Machine does not exist" << endl;
+            return;
+        }
+        int i = 0;
+        CircleListNode<Machine>* current = ring.head;
+        while (!(current->data.getId() == id)) {
+            current = current->next;
+            i++;
+        }
+        if (current == ring.head) ring.pop();
+        else {
+            current->data.shiftFiles('d', current->next->data);
+            ring.delete_from_index(i);
+        }
     }
 
     void destroyRoutingTables() {

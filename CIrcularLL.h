@@ -38,7 +38,9 @@ public:
 
 	CircularLinkedList<T> operator=(const CircularLinkedList<T>& other)
 	{
-		if (other.head == nullptr) return;
+		if (other.head == nullptr) {
+			makenull(); return *this;
+		};
 		this->head = new CircleListNode<T>(other.head->data);
 		CircleListNode<T>* curr = other.head->next;
 		CircleListNode<T>* Next = this->head;

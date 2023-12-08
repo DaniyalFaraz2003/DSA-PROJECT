@@ -63,29 +63,12 @@ using namespace std;
 //}
 
 int main() {
-	/*DHT sys(5);
-
-	sys.makeRoutingTables();
-	cout << sys.ring;
-
-	auto ptr = sys.ring.head;
+	DHT sys(5);
+	
+	/*auto ptr = sys.ring.head;
 	while (!(ptr->data.getId() == BIG_INT("19"))) ptr = ptr->next;
 	ptr->data.printRoutingTable();*/
 
-	Machine m(BIG_INT("50"));
-	Machine n(BIG_INT("25"));
-	for (int i : {1, 43, 5, 6, 23, 7, 87, 8, 4, 3, 50, 8}) {
-		m.addFile(BIG_INT(to_string(i)), ".txt");
-	}
-	n.printBtree();
-	m.printBtree();
-	n.shiftFiles('i', m);
-
-	m.printBtree();
-	n.printBtree();
-
-	n.shiftFiles('d', m);
-	n.printBtree();
-	m.printBtree();
+	
 	return 0;
 }

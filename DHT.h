@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <string>
+#include <fstream>
 #include "CIrcularLL.h"
 #include "Machine.h"
 #include "BigInt.h"
@@ -75,6 +76,34 @@ public:
 		}
 
 	}
+    void showMachines() {
+        std::string dotCode = "graph CircularLinkedList {\n";
+        CircleListNode<Machine>* current = ring.head;
+
+        // Specify the layout engine as "circo"
+        dotCode += "  graph [layout=neato];\n";
+
+        while (current->next != ring.head) {
+            // Add a node for each element
+            dotCode += "  " + current->data.getId().getBIG_INT() + " -- ";
+
+            current = current->next;
+        } 
+
+        // Close the loop in DOT code
+        dotCode += "  " + current->data.getId().getBIG_INT() + " -- " + ring.head->data.getId().getBIG_INT() + " [label=\"\", shape=circle];\n";
+        dotCode += "}\n";
+
+
+        ofstream dotFile("dht.dot");
+        dotFile << dotCode;
+        dotFile.close();
+        string command = "neato -Tpng -Gsplines=true dht.dot -o dht.png";
+        system(command.c_str());
+        system("start dht.png");
+        
+    }
+
     void insertMachine() { // this has to be changed for the future
         // changes to make are to make a folder for a new machine and divide the files in the machines
         destroyRoutingTables();
@@ -125,7 +154,9 @@ public:
         curr->data.destroyRoutingTable();
     }
 
-	void searchFile();
+    void searchFile() {
+
+    }
 	void addFile();
 	void removeFile();
 

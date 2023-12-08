@@ -154,15 +154,15 @@ public:
 		return val;
 	}
 
-	T pop()
+	void pop()
 	{
 
-		T val;
 
 		if (isEmpty())
 		{
 
 			cout << "List is empty \n";
+			return;
 		}
 
 		CircleListNode<T>* prevNode = nullptr;
@@ -178,7 +178,6 @@ public:
 		if (currNode == head)
 		{
 
-			val = head->data;
 			delete head;
 			head = nullptr;
 		}
@@ -186,12 +185,10 @@ public:
 		else
 		{
 
-			val = currNode->data;
 			prevNode->next = head;
 			delete currNode;
 		}
 
-		return val;
 	}
 
 	void insert_at_index(int index, T value)
@@ -236,22 +233,21 @@ public:
 		}
 	}
 
-	T delete_from_index(int index)
+	void delete_from_index(int index)
 	{
 
-		T value;
 
 		if (isEmpty() || index < 0)
 		{
 
 			cout << "Index is invalid or the list is empty \n";
+			return;
 		}
 
 		if (index == 0)
 		{
 
 			CircleListNode<T>* tempNode = head;
-			value = tempNode->data;
 
 			if (head->next == head)
 			{
@@ -294,16 +290,14 @@ public:
 			{
 
 				cout << "Index is invalid \n";
-				return T();
+				return;
 			}
 
-			value = current->data;
 			prevNode->next = current->next;
 
 			delete current;
 		}
 
-		return value;
 	}
 
 	CircularLinkedList<T> operator+(const CircularLinkedList<T>& ot) const

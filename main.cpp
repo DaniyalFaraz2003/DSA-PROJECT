@@ -64,11 +64,14 @@ using namespace std;
 
 int main() {
 	DHT sys(5);
-	
+	sys.makeRoutingTables();
 	/*auto ptr = sys.ring.head;
 	while (!(ptr->data.getId() == BIG_INT("19"))) ptr = ptr->next;
 	ptr->data.printRoutingTable();*/
 
-	
+	//1, 4, 9
+	BIG_INT e = BIG_INT("20");
+	BIG_INT p = BIG_INT("1");
+	sys.searchFile(e, p);
 	return 0;
 }

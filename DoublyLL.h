@@ -114,6 +114,10 @@ public:
 		return Iterator(nullptr);
 	}
 
+	T& front() {
+		return this->head->data;
+	}
+
 	bool isEmpty()
 	{
 

@@ -36,7 +36,7 @@ private:
 public:
     BTree(int degree = 0) : m(degree)
     {
-        root = new BTreeNode<T>(true);
+        root = nullptr;
     }
 
     void setDegree(int degree) {
@@ -483,6 +483,21 @@ public:
         }
     }
 
+    ~BTree() {
 
+        BTreeNode<T>* rootnode = getRoot();
+        if (rootnode == nullptr) return;
+        Queue<BTreeNode<T>*> q;
+        q.enqueue(rootnode);
+        while (!q.isEmpty()) {
+
+            BTreeNode<T>* current = q.head();
+            q.dequeue();
+            for (int i = 0; i < current->children.getSize(); i++) {
+                q.enqueue(current->children[i]);
+            }
+            delete current;
+        }
+    }
 };
 

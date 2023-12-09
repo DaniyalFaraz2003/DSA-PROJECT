@@ -18,9 +18,9 @@ public:
 	DHT(int bitSize = 0) {
         this->identifierSpace = bitSize;
 
-        /*for (int i : {1, 2, 3, 5, 8, 11, 19, 20, 28}) {
+        for (int i : {1}) {
             this->ring.insertSorted(Machine(BIG_INT(to_string(i))));
-        }*/
+        }
 	}
    
 	void makeRoutingTables() {
@@ -154,8 +154,79 @@ public:
         curr->data.destroyRoutingTable();
     }
 
-    void searchFile() {
-
+    void searchFile(BIG_INT& e, BIG_INT& p) { // here we implement the search algorithm using the routing tables.
+        // the case where only one machine is in the system
+        if (ring.head == ring.head->next) {
+            if (p == ring.head->data.getId()) { // this means the machine is there and is the only machine in the system
+                cout << p;
+                return;
+            }
+            else {
+                cout << "machine does not exist" << endl;
+                return;
+            }
+        }
+        // first step is to find the machine from which the request has to be generated.
+        Machine* currentMachinePtr = &ring.head->data;
+        while (!(p == currentMachinePtr->getId())) {
+            if (p > currentMachinePtr->getId() && p <= currentMachinePtr->getRoutingTable().front()->getId()) {
+                currentMachinePtr = currentMachinePtr->getRoutingTable().front();
+                break;
+            }
+            else {
+                for (DoublyLinkedList<Machine*>::Iterator it = currentMachinePtr->getRoutingTable().begin(); it != currentMachinePtr->getRoutingTable().end(); ++it) {
+                    if (it + 1 == nullptr) {
+                        currentMachinePtr = *it;
+                        break;
+                    }
+                    else {
+                        if (p > (*it)->getId() && p <= (it + 1)->data->getId()) {
+                            currentMachinePtr = *it;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if (!(currentMachinePtr->getId() == p)) {
+            cout << "Machine does not exist" << endl; return;
+        }
+        // now we have the pointer to the machine from which the request has to be generated.
+        p = currentMachinePtr->getId();
+        while (true) { // search the ring dht using the machine's routing tables
+            if (e == p) { // currentMachinePtr contains the file
+                break;
+            }
+            else if (e > p && e <= currentMachinePtr->getRoutingTable().front()->getId()) { // the next machine contains the file
+                currentMachinePtr = currentMachinePtr->getRoutingTable().front();
+                break;
+            }
+            else if (e > p && (p > currentMachinePtr->getRoutingTable().front()->getId())) { // the case where the next machine is the head
+                currentMachinePtr = currentMachinePtr->getRoutingTable().front();
+                break;
+            }
+            else {
+                for (DoublyLinkedList<Machine*>::Iterator it = currentMachinePtr->getRoutingTable().begin(); it != currentMachinePtr->getRoutingTable().end(); ++it) {
+                    if (it + 1 == nullptr) { // not found in the routing table. we point to the last entry in the routing table
+                        currentMachinePtr = *it;
+                        break;
+                    }
+                    else {
+                        if (e > (*it)->getId() && (*it)->getId() > (it + 1)->data->getId()) { // the case the where the next machine is the head
+                            currentMachinePtr = *it;
+                            break;
+                        }
+                        if (e > (*it)->getId() && e <= (it + 1)->data->getId()) { // file found in this range
+                            currentMachinePtr = *it;
+                            break;
+                        }
+                    }
+                }
+            }
+            p = currentMachinePtr->getId();
+        }
+        p = currentMachinePtr->getId();
+        cout << p;
     }
 	void addFile();
 	void removeFile();

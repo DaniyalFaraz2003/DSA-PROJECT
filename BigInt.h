@@ -22,6 +22,15 @@ public:
     {
         this->bigInt = copy.bigInt;
     }
+    bool validate() {
+        for (int i = 0; i < this->bigInt.length(); i++) {
+            if (bigInt[i] < '0' && bigInt[i] > '9') {
+                return false;
+            }
+        }
+        if (bigInt.length() > 1 && bigInt[0] == '0') return false;
+        return true;
+    }
     string getBIG_INT() { return this->bigInt; }
     BIG_INT operator+(const BIG_INT& other)
     {

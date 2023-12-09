@@ -1,14 +1,6 @@
 
 #include <iostream>
-#include <string>
-#include "sha1.hpp"
-#include "BTree.h"
-#include "CIrcularLL.h"
-#include "DoublyLL.h"
-#include "SinglyLL.h"
-#include "DHT.h"
-#include "BigInt.h"
-#include "Utils.h"
+#include "System.h"
 using namespace std;
 
 
@@ -32,16 +24,6 @@ using namespace std;
 //}
 
 //int main() {
-//	CircularLinkedList<int> cl;
-//	for (int i = 0; i < 5; i++) {
-//		cl.push(i);
-//	}
-//	CircleListNode<int>* current = cl.head;
-//	for (int i = 0; i < 10; i++) {
-//		cout << current->data << ' ';
-//		current = current->next;
-//	}
-//	
 //
 //	cout << endl;
 //	const string input1 = "abc";
@@ -58,20 +40,11 @@ using namespace std;
 //	cout << "The SHA-1 of \"" << input1 << "\" is: " << hash << endl;
 //	cout << "The SHA-1 of \"" << input2 << "\" is: " << hash2 << endl;
 //	cout << hash.length() << endl;;
-//	cout << SHA1::from_file("test.txt") << " *" << "test.txt" << endl;
+//	cout << SHA1::from_file("C:\\Users\\user\\Documents\\Bandicam\\bandicam 2023-12-09 17-03-21-836.mp4") << " *" << "IMG_4888.jpg" << endl;
 //	return 0;
 //}
 
 int main() {
-	DHT sys(5);
-	sys.makeRoutingTables();
-	/*auto ptr = sys.ring.head;
-	while (!(ptr->data.getId() == BIG_INT("19"))) ptr = ptr->next;
-	ptr->data.printRoutingTable();*/
-
-	//1, 4, 9
-	BIG_INT e = BIG_INT("20");
-	BIG_INT p = BIG_INT("1");
-	sys.searchFile(e, p);
+	System sys; sys.start();
 	return 0;
 }

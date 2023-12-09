@@ -1,4 +1,7 @@
 #pragma once
+#ifndef ARRAYBASEDLIST_H
+#define ARRAYBASEDLIST_H
+
 
 #include <iostream>
 using namespace std;
@@ -157,3 +160,5 @@ public:
         delete[] arr;
     }
 };
+
+#endif // !ARRAYBASEDLIST_H

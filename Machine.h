@@ -2,10 +2,11 @@
 #ifndef MACHINE_H
 #define MACHINE_H
 
-#include <iostream>
 #include <fstream>
 #include "BTree.h"
 #include "BigInt.h"
+#include "DoublyLL.h"
+#include "SinglyLL.h"
 using namespace std;
 
 template <class T, class U>
@@ -177,7 +178,10 @@ public:
 	void removeFile(BIG_INT id) {
 		KeyValuePair<BIG_INT, LinkedList<string>> data; data.key = id;
 		Pair<BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>*, int, int> res = indexTree.search(data);
-		if (res.first == nullptr) return; // if not there so return
+		if (res.first == nullptr) {
+			cout << "no file found with id: " << id.getBIG_INT() << endl;
+			return;
+		}; // if not there so return
 		if (res.first->keys[res.second].value.getSize() == 1) { // only one value of this hash so delete the whole key
 			indexTree.deleteNode(data);
 		}
@@ -248,8 +252,7 @@ public:
 						// here we need to move files too but that is later work
 						dataToBeDeleted.push(current->keys[i]);
 						for (LinkedList<string>::Iterator it = current->keys[i].value.begin(); it != current->keys[i].value.end(); ++it) {
-							//addFile(current->keys[i].key, getExtension(*it));
-							addFile(current->keys[i].key, ".txt");
+							addFile(current->keys[i].key, getExtension(*it));
 						}
 					}
 				}
@@ -276,8 +279,7 @@ public:
 				{
 					// here we need to move files too but that is later work
 					for (LinkedList<string>::Iterator it = current->keys[i].value.begin(); it != current->keys[i].value.end(); ++it) {
-						//other.addFile(current->keys[i].key, getExtension(*it));
-						other.addFile(current->keys[i].key, ".txt");
+						other.addFile(current->keys[i].key, getExtension(*it));
 					}
 					
 				}

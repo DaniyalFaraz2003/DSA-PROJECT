@@ -6,6 +6,17 @@
 #include "SinglyLL.h"
 using namespace std;
 
+string ext(const string filename) {
+    string res; int i;
+    for (i = filename.length() - 1; i >= 0; i--) {
+        if (filename[i] == '.') break;
+    }
+    for (i; i < filename.length(); i++) {
+        res += filename[i];
+    }
+    return res;
+}
+
 BIG_INT power(BIG_INT num, const int power) {
     if (power == 0) return BIG_INT("1");
 	BIG_INT temp = num;

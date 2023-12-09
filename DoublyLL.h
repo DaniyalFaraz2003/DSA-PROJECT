@@ -1,4 +1,8 @@
 #pragma once
+#ifndef DOUBLYLL_H
+#define DOUBLYLL_H
+
+
 #include <iostream>
 #include <string>
 using namespace std;
@@ -449,3 +453,5 @@ public:
 		makenull();
 	}
 };
+
+#endif // !DOUBLYLL_H

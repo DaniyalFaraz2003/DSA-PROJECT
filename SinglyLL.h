@@ -1,4 +1,7 @@
 #pragma once
+#ifndef SINGLYLL_H
+#define SINGLYLL_H
+
 #include <iostream>
 #include <string>
 using namespace std;
@@ -459,3 +462,5 @@ public:
 		makenull();
 	}
 };
+
+#endif // !SINGLYLL_H

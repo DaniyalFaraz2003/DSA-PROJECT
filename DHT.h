@@ -1,10 +1,10 @@
 #pragma once
-#include <iostream>
-#include <string>
-#include <fstream>
+
+#ifndef DHT_H
+#define DHT_H
+
 #include "CIrcularLL.h"
 #include "Machine.h"
-#include "BigInt.h"
 #include "Utils.h"
 #include "sha1.hpp"
 using namespace std;
@@ -18,11 +18,17 @@ public:
 	DHT(int bitSize = 0) {
         this->identifierSpace = bitSize;
 
-        for (int i : {1}) {
+        /*for (int i : {1, 4, 9, 11, 14, 18, 20, 21, 28}) {
             this->ring.insertSorted(Machine(BIG_INT(to_string(i))));
-        }
+        }*/
 	}
-   
+    bool setBitSize(int bitSize) {
+        if (bitSize > 0 && bitSize < 161) {
+            this->identifierSpace = bitSize;
+            return true;
+        }
+        else return false;
+    }
 	void makeRoutingTables() {
 		CircleListNode<Machine>* start = ring.head;
         if (start->next == ring.head) {
@@ -104,18 +110,19 @@ public:
         
     }
 
-    void insertMachine() { // this has to be changed for the future
-        // changes to make are to make a folder for a new machine and divide the files in the machines
+    void insertMachine(BIG_INT machineId) { // this has to be changed for the future
+        // changes to make are to make a folder for a new machine and divmachineIde the files in the machines
         destroyRoutingTables();
-        string machineName;
-        string hash;
-        BIG_INT machineId;
-        cout << "Enter the name of the machine: ";
-        getline(cin, machineName);
-        SHA1 digest; digest.update(machineName); hash = digest.final(); machineId = hashMod(hash, identifierSpace);
-        while (ring.exists(Machine(machineId))) {
-            cout << "Machine already exists enter name again: "; getline(cin, machineName);
-            digest.update(machineName); hash = digest.final(); machineId = hashMod(hash, identifierSpace);
+        if (machineId == BIG_INT("-1")) {
+            string machineName;
+            string hash;
+            cout << "Enter the name of the machine: ";
+            getline(cin, machineName);
+            SHA1 digest; digest.update(machineName); hash = digest.final(); machineId = hashMod(hash, identifierSpace);
+            while (ring.exists(Machine(machineId))) {
+                cout << "Machine already exists enter name again: "; getline(cin, machineName);
+                digest.update(machineName); hash = digest.final(); machineId = hashMod(hash, identifierSpace);
+            }
         }
         ring.insertSorted(Machine(machineId)); // here we update the Btrees too. and to make a folder in the system for this machine
         makeRoutingTables();
@@ -142,6 +149,7 @@ public:
             current->data.shiftFiles('d', current->next->data);
             ring.delete_from_index(i);
         }
+        cout << "machine removed" << endl;
     }
 
     void destroyRoutingTables() {
@@ -154,16 +162,15 @@ public:
         curr->data.destroyRoutingTable();
     }
 
-    void searchFile(BIG_INT& e, BIG_INT& p) { // here we implement the search algorithm using the routing tables.
-        // the case where only one machine is in the system
+    Machine* routerSearch(BIG_INT& e, BIG_INT& p) {
         if (ring.head == ring.head->next) {
             if (p == ring.head->data.getId()) { // this means the machine is there and is the only machine in the system
                 cout << p;
-                return;
+                return &ring.head->data;
             }
             else {
                 cout << "machine does not exist" << endl;
-                return;
+                return nullptr;
             }
         }
         // first step is to find the machine from which the request has to be generated.
@@ -189,11 +196,14 @@ public:
             }
         }
         if (!(currentMachinePtr->getId() == p)) {
-            cout << "Machine does not exist" << endl; return;
+            cout << "Machine does not exist" << endl; return nullptr;
         }
         // now we have the pointer to the machine from which the request has to be generated.
         p = currentMachinePtr->getId();
         while (true) { // search the ring dht using the machine's routing tables
+            if (!(e == p) && (e < p) && (e < currentMachinePtr->getRoutingTable().front()->getId())) { // this means we have found the machine
+                break;
+            }
             if (e == p) { // currentMachinePtr contains the file
                 break;
             }
@@ -225,11 +235,51 @@ public:
             }
             p = currentMachinePtr->getId();
         }
-        p = currentMachinePtr->getId();
-        cout << p;
+        // till here we have reached the machine where the actual file is stored
+        return currentMachinePtr;
     }
-	void addFile();
-	void removeFile();
 
+    void searchFile(BIG_INT& e, BIG_INT& p) { // here we implement the search algorithm using the routing tables.
+        Machine* machine = routerSearch(e, p);
+        if (machine == nullptr) {
+            cout << "no machine with id: " << p.getBIG_INT() << endl;
+            return;
+        }
+        Pair<BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>*, int, int> searchResult = machine->searchFile(e);
+        if (searchResult.first == nullptr) {
+            cout << "No such file in the system" << endl;
+        }
+        else {
+            int count = 0;
+            cout << "The files with id " << e.getBIG_INT() << " are: " << endl;
+            for (LinkedList<string>::Iterator it = searchResult.first->keys[searchResult.second].value.begin(); it != searchResult.first->keys[searchResult.second].value.end(); ++it) {
+                cout << ++count << ". " << *it << endl;
+            }
+        }
+    }
+    void addFile(const string& path) {
+        ifstream file(path);
+        if (file.is_open()) {
+            BIG_INT p = ring.head->data.getId();
+            string hash = SHA1::from_file(path);
+            BIG_INT e = hashMod(hash, identifierSpace);
+            Machine* machine = routerSearch(e, p);
+            machine->addFile(e, ext(path));
+            cout << "file inserted in system with id: " << e.getBIG_INT() << endl;
+            file.close();
+        }
+        else {
+            cout << "no file exists with this path" << endl;
+        }
+        
+    }
+    void removeFile(BIG_INT& e) {
+        BIG_INT p = ring.head->data.getId();
+        Machine* machine = routerSearch(e, p);
+        machine->removeFile(e);
+        cout << "file removed" << endl;
+    }
 };
 
+
+#endif // !DHT_H

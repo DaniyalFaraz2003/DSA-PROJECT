@@ -45,6 +45,15 @@ using namespace std;
 //}
 
 int main() {
-	System sys; sys.start();
+	//System sys; sys.start();
+	DHT sys;
+	sys.setBitSize(3);
+	//sys.showMachines();
+	sys.makeRoutingTables();
+	BIG_INT e, p;
+	e = BIG_INT("0");
+	p = BIG_INT("5");
+	Machine* m = sys.routerSearch(e, p);
+	if (m != nullptr) cout << m->getId();
 	return 0;
 }

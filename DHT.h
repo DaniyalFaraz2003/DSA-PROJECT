@@ -13,11 +13,17 @@ using namespace std;
 class DHT
 {
 	int identifierSpace;
+    bool validateId(BIG_INT id) { // returns true if id is invalid
+        if (id.getBIG_INT()[0] == '-') return true;
+        return (ring.exists(Machine(id)) || !id.validate() || (id > (power(BIG_INT("2"), identifierSpace) - BIG_INT("1"))));
+    }
 public:CircularLinkedList<Machine> ring;
 public:
 	DHT(int bitSize = 0) {
         this->identifierSpace = bitSize;
-
+        for (int i : {0, 5}) {
+            ring.insertSorted(Machine(BIG_INT(to_string(i))));
+        }
 	}
     bool setBitSize(int bitSize) {
         if (bitSize > 0 && bitSize < 161) {
@@ -116,6 +122,7 @@ public:
         string machineName, hash; int treeDegree; char idChoice; BIG_INT machineId("0");
         cout << "Enter the name of the machine: "; getline(cin, machineName);
         cout << "You want to manually assign id to this machine? (y for yes): "; cin >> idChoice;
+        cin.ignore();
         if (idChoice != 'y') {
             SHA1 digest; digest.update(machineName); hash = digest.final(); machineId = hashMod(hash, identifierSpace);
             while (ring.exists(Machine(machineId))) {
@@ -126,7 +133,7 @@ public:
         else {
             cout << "Enter the id you want to assign to this machine: ";
             getline(cin, hash); BIG_INT id = BIG_INT(hash);
-            while (ring.exists(Machine(id)) || !id.validate() || (id > (power(BIG_INT("2"), identifierSpace) - BIG_INT("1")))) {
+            while (validateId(id)) {
                 if (ring.exists(Machine(id))) {
                     cout << "Machine already exists, enter again: ";
                 }
@@ -141,6 +148,7 @@ public:
         while (treeDegree < 3) {
             cout << "Invalid tree degree, enter again: "; cin >> treeDegree;
         }
+        cin.ignore();
         ring.insertSorted(Machine(machineId, machineName, treeDegree)); // here we update the Btrees too. and to make a folder in the system for this machine
         makeRoutingTables();
         CircleListNode<Machine>* current = ring.head;
@@ -231,9 +239,12 @@ public:
                 currentMachinePtr = currentMachinePtr->getRoutingTable().front();
                 break;
             }
-            else if (e > p && (p > currentMachinePtr->getRoutingTable().front()->getId())) { // the case where the next machine is the head
-                currentMachinePtr = currentMachinePtr->getRoutingTable().front();
-                break;
+            else if ((p > currentMachinePtr->getRoutingTable().front()->getId())) { // the case where the next machine is the head
+                // here we consider two cases. one in which e is greater than current. and another where e is less than or equal to the head
+                if (e > p || e <= currentMachinePtr->getRoutingTable().front()->getId()) {
+                    currentMachinePtr = currentMachinePtr->getRoutingTable().front();
+                    break;
+                }
             }
             else {
                 for (DoublyLinkedList<Machine*>::Iterator it = currentMachinePtr->getRoutingTable().begin(); it != currentMachinePtr->getRoutingTable().end(); ++it) {
@@ -293,7 +304,41 @@ public:
         }
         
     }
-    void removeFile(BIG_INT& e) {
+    void printRoutingTable() {
+        string id; cout << "Enter the id of the machine you want to print the routing table of: "; getline(cin, id);
+        BIG_INT machineId(id);
+        while (validateId(machineId)) {
+            if (ring.exists(Machine(id))) {
+                break;
+            }
+            else {
+                cout << "Invalid Id, enter again: ";
+            }
+            getline(cin, id);
+            machineId = BIG_INT(id);
+        }
+        BIG_INT startId = ring.head->data.getId();
+        Machine* machine = routerSearch(machineId, startId);
+        machine->printRoutingTable();
+    }
+    void printBtree() {
+        string id; cout << "Enter the id of the machine you want to print the routing table of: "; getline(cin, id);
+        BIG_INT machineId(id);
+        while (validateId(machineId)) {
+            if (ring.exists(Machine(id))) {
+                break;
+            }
+            else {
+                cout << "Invalid Id, enter again: ";
+            }
+            getline(cin, id);
+            machineId = BIG_INT(id);
+        }
+        BIG_INT startId = ring.head->data.getId();
+        Machine* machine = routerSearch(machineId, startId);
+        machine->printBtree();
+    }
+    void removeFile(BIG_INT e) {
         BIG_INT p = ring.head->data.getId();
         Machine* machine = routerSearch(e, p);
         machine->removeFile(e);

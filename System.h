@@ -5,6 +5,9 @@
 
 #include <iomanip>
 #include <string>
+#include <ctime>
+#include <chrono>
+#include <thread>
 using namespace std;
 
 class System
@@ -49,16 +52,57 @@ public:
 		}
 		int choice;
 		do {
+			string fileId, machineId;
+			string id;
+			string path;
+			BIG_INT e;
+			BIG_INT p;
 			menu();
 			cout << endl << "What operation do you want to perform: "; cin >> choice;
+			cin.ignore();
 			switch (choice)
 			{
 			case 1:
 				sys.showMachines();
 				break;
+			case 2:
+				sys.insertMachine();
+				break;
+			case 3:
+				
+				cout << "Enter which id machine to remove: "; getline(cin, id);
+				sys.removeMachine(BIG_INT(id));
+				break;
+			case 4:
+				
+				cout << "Enter the complete path of the file: "; getline(cin, path);
+				sys.addFile(path);
+				break;
+			case 5:
+				
+				cout << "Enter the id of the file to remove: "; getline(cin, fileId);
+				sys.removeFile(BIG_INT(id));
+				break;
+			case 6:
+				
+				cout << "Enter the id of the file to search: "; getline(cin, fileId);
+				cout << "Enter the id of the machine to originate the search from: "; getline(cin, machineId);
+				e = fileId;
+				p = machineId;
+				sys.searchFile(e, p);
+				break;
+			case 7:
+				sys.printRoutingTable();
+				break;
+			case 8:
+				sys.printBtree();
+				break;
 			default:
+				cout << "Invalid choice entered" << endl;
 				break;
 			}
+			this_thread::sleep_for(chrono::seconds(3));
+			system("cls");
 		} while (choice != 9);
 	}
 

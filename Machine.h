@@ -161,7 +161,7 @@ public:
 
 	void addFile(BIG_INT id, string extension, const string& filename = "") {
 		KeyValuePair<BIG_INT, LinkedList<string>> data; data.key = id; 
-		string path = "D:\\DHT\\" + name + "\\" + id.getBIG_INT() + "\\";
+		string path = "D:\DHT\\" + name + "\\" + id.getBIG_INT() + "\\";
 		Pair<BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>*, int, int> res = indexTree.search(data);
 		if (res.first == nullptr) { // if this id is not already present then just insert the node
 			path += "file_" + id.getBIG_INT() + '_' + to_string(data.value.getSize()) + extension;
@@ -234,6 +234,7 @@ public:
 	}
 
 	void shiftFiles(char mode, Machine& other) {
+		if (this->indexTree.getRoot() == nullptr || other.indexTree.getRoot() == nullptr) return;
 		if (mode == 'i') { // if insert is mode then we add other's files with id e where e <= currentMachineId
 			BIG_INT thisId = id;
 			BIG_INT nextId = other.getId();

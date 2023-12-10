@@ -44,6 +44,7 @@ public:
 
     Pair<BTreeNode<T>*, int, int> search(T key, BTreeNode<T>* node = nullptr, int childIndex = 0)
     {
+        if (root == nullptr) return { nullptr, -1, -1 };
         node = (node == nullptr) ? root : node;
 
         int i = 0;

@@ -212,6 +212,7 @@ public:
 	void printBtree() {
 		if (this->indexTree.getRoot() == nullptr) {
 			cout << "Tree is empty" << endl;
+			return;
 		}
 		Queue<BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>*> levelOrderQueue;
 		levelOrderQueue.enqueue(this->indexTree.getRoot());

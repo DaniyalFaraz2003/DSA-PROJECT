@@ -23,9 +23,9 @@ public:
         this->identifierSpace = bitSize;
         
         // for debugging purpose
-        for (int i : {5, 9, 11}) {
+        /*for (int i : {5, 9, 11}) {
             ring.insertSorted(Machine(BIG_INT(to_string(i))));
-        }
+        }*/
 	}
     bool setBitSize(int bitSize) {
         if (bitSize > 0 && bitSize < 161) {

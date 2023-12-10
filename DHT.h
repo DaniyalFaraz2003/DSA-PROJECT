@@ -326,7 +326,7 @@ public:
         machine->printRoutingTable();
     }
     void printBtree() {
-        string id; cout << "Enter the id of the machine you want to print the routing table of: "; getline(cin, id);
+        string id; cout << "Enter the id of the machine you want to print the B-Tree of: "; getline(cin, id);
         BIG_INT machineId(id);
         while (validateId(machineId)) {
             if (ring.exists(Machine(id))) {

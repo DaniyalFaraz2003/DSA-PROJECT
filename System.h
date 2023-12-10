@@ -103,7 +103,7 @@ public:
 				cout << "Invalid choice entered" << endl;
 				break;
 			}
-			this_thread::sleep_for(chrono::seconds(3));
+			this_thread::sleep_for(chrono::seconds(5));
 			system("cls");
 		} while (choice != 9);
 	}

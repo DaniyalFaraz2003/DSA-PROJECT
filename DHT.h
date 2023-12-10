@@ -23,7 +23,7 @@ public:
         this->identifierSpace = bitSize;
         
         // for debugging purpose
-        /*for (int i : {2, 4, 13}) {
+        /*for (int i : {5, 9, 11}) {
             ring.insertSorted(Machine(BIG_INT(to_string(i))));
         }*/
 	}
@@ -168,17 +168,18 @@ public:
             cout << "Machine does not exist" << endl;
             return;
         }
+        if (ring.getSize() == 1) {
+            ring.pop(); cout << "machine removed" << endl;
+            return;
+        }
         int i = 0;
         CircleListNode<Machine>* current = ring.head;
         while (!(current->data.getId() == id)) {
             current = current->next;
             i++;
         }
-        if (current == ring.head) ring.pop();
-        else {
-            current->data.shiftFiles('d', current->next->data);
-            ring.delete_from_index(i);
-        }
+        current->data.shiftFiles('d', current->next->data);
+        ring.delete_from_index(i);
         cout << "machine removed" << endl;
     }
 
@@ -213,7 +214,10 @@ public:
             else {
                 for (DoublyLinkedList<Machine*>::Iterator it = currentMachinePtr->getRoutingTable().begin(); it != currentMachinePtr->getRoutingTable().end(); ++it) {
                     if (it + 1 == nullptr) {
-                        currentMachinePtr = *it;
+                        if (currentMachinePtr->getId() == (*it)->getId())
+                            currentMachinePtr = currentMachinePtr->getRoutingTable().front();
+                        else
+                            currentMachinePtr = *it;
                         break;
                     }
                     else {
@@ -322,8 +326,10 @@ public:
             machineId = BIG_INT(id);
         }
         BIG_INT startId = ring.head->data.getId();
-        Machine* machine = routerSearch(machineId, startId);
-        machine->printRoutingTable();
+        Machine* machine = routerSearch(machineId, machineId);
+        if (machine) {
+            machine->printRoutingTable();
+        }
     }
     void printBtree() {
         string id; cout << "Enter the id of the machine you want to print the B-Tree of: "; getline(cin, id);
@@ -339,8 +345,10 @@ public:
             machineId = BIG_INT(id);
         }
         BIG_INT startId = ring.head->data.getId();
-        Machine* machine = routerSearch(machineId, startId);
-        machine->printBtree();
+        Machine* machine = routerSearch(machineId, machineId);
+        if (machine) {
+            machine->printBtree();
+        }
     }
     void removeFile(BIG_INT e) {
         BIG_INT p = ring.head->data.getId();

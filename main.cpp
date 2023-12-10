@@ -46,16 +46,14 @@ using namespace std;
 
 int main() {
 	System sys; sys.start();
-	//DHT sys;
-	//sys.setBitSize(4);
-	//sys.showMachines();
-	//sys.makeRoutingTables();
-	//sys.printRoutingTable();
-	//BIG_INT e, p;
-	//e = BIG_INT("9");
-	//p = BIG_INT("11");
-	//Machine* m = sys.routerSearch(e, p);
-	//if (m != nullptr) cout << m->getId();
+	/*DHT sys;
+	sys.setBitSize(4);
+	sys.makeRoutingTables();
+	BIG_INT e, p;
+	e = BIG_INT("13");
+	p = BIG_INT("5");
+	Machine* m = sys.routerSearch(e, p);
+	if (m != nullptr) cout << m->getId();*/
 	//sys.addFile("D:\\DSA Project\\DSA Project\\dht.png");
 	//sys.addFile("D:\\DSA Project\\DSA Project\\btree.dot");
 	//sys.addFile("D:\\DSA Project\\DSA Project\\btree.png");

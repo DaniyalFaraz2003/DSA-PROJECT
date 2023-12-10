@@ -23,6 +23,7 @@ public:
         this->bigInt = copy.bigInt;
     }
     bool validate() {
+        if (bigInt == "") return false;
         for (int i = 0; i < this->bigInt.length(); i++) {
             if (bigInt[i] < '0' && bigInt[i] > '9') {
                 return false;

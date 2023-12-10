@@ -23,9 +23,9 @@ public:
         this->identifierSpace = bitSize;
         
         // for debugging purpose
-        /*for (int i : {5, 9, 11}) {
+        for (int i : {5, 9, 11}) {
             ring.insertSorted(Machine(BIG_INT(to_string(i))));
-        }*/
+        }
 	}
     bool setBitSize(int bitSize) {
         if (bitSize > 0 && bitSize < 161) {
@@ -194,6 +194,8 @@ public:
     }
 
     Machine* routerSearch(BIG_INT& e, BIG_INT& p) {
+        if (!e.validate() || e.getBIG_INT()[0] == '-' || e >= power(BIG_INT("2"), identifierSpace)) return nullptr;
+        else if (!p.validate() || p.getBIG_INT()[0] == '-' || p >= power(BIG_INT("2"), identifierSpace)) return nullptr;
         if (ring.head == ring.head->next) {
             if (p == ring.head->data.getId()) { // this means the machine is there and is the only machine in the system
                 cout << p;
@@ -207,7 +209,18 @@ public:
         // first step is to find the machine from which the request has to be generated.
         Machine* currentMachinePtr = &ring.head->data;
         while (!(p == currentMachinePtr->getId())) {
-            if (p > currentMachinePtr->getId() && p <= currentMachinePtr->getRoutingTable().front()->getId()) {
+            if (p < currentMachinePtr->getId() && currentMachinePtr == &ring.head->data) {
+                break;
+            }
+            else if (p > currentMachinePtr->getId() && p <= currentMachinePtr->getRoutingTable().front()->getId()) {
+                currentMachinePtr = currentMachinePtr->getRoutingTable().front();
+                break;
+            }
+            else if (p > currentMachinePtr->getId() && currentMachinePtr->getRoutingTable().front()->getId() < currentMachinePtr->getId()) { // case where next is head
+                currentMachinePtr = currentMachinePtr->getRoutingTable().front();
+                break;
+            }
+            else if (p < currentMachinePtr->getId() && currentMachinePtr->getRoutingTable().front()->getId() < currentMachinePtr->getId()) { // case where next is head
                 currentMachinePtr = currentMachinePtr->getRoutingTable().front();
                 break;
             }
@@ -221,6 +234,10 @@ public:
                         break;
                     }
                     else {
+                        if (p > (*it)->getId() && (*it)->getId() > (it + 1)->data->getId()) { // the case the where the next machine is the head
+                            currentMachinePtr = *it;
+                            break;
+                        }
                         if (p > (*it)->getId() && p <= (it + 1)->data->getId()) {
                             currentMachinePtr = *it;
                             break;

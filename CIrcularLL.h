@@ -20,6 +20,7 @@ public:
 template <typename T>
 class CircularLinkedList
 {
+	int size = 0;
 public:
 	CircleListNode<T>* head;
 	CircularLinkedList() : head(nullptr) {}
@@ -43,8 +44,10 @@ public:
 	CircularLinkedList<T> operator=(const CircularLinkedList<T>& other)
 	{
 		if (other.head == nullptr) {
+			this->size = other.size;
 			makenull(); return *this;
 		};
+		this->size == other.size;
 		this->head = new CircleListNode<T>(other.head->data);
 		CircleListNode<T>* curr = other.head->next;
 		CircleListNode<T>* Next = this->head;
@@ -92,6 +95,7 @@ public:
 			currNode->next = newNode;
 			newNode->next = head;
 		}
+		size++;
 	}
 
 	void push_front(T value)
@@ -121,17 +125,18 @@ public:
 			newNode->next = head;
 			head = newNode;
 		}
+		size++;
 	}
 
-	T pop_front()
+	void pop_front()
 	{
 
 		if (isEmpty())
 		{
 			cout << "List is empty \n";
+			return;
 		}
 
-		T val = head->data;
 		CircleListNode<T>* tempNode = head;
 
 		while (tempNode->next != head)
@@ -154,8 +159,8 @@ public:
 			delete head;
 			head = tempNode->next;
 		}
-
-		return val;
+		size--;
+		return;
 	}
 
 	void pop()
@@ -192,7 +197,7 @@ public:
 			prevNode->next = head;
 			delete currNode;
 		}
-
+		size--;
 	}
 
 	void insert_at_index(int index, T value)
@@ -211,6 +216,7 @@ public:
 
 			head = newNode;
 			head->next = head;
+			size++;
 		}
 
 		else
@@ -234,6 +240,7 @@ public:
 
 			newNode->next = current->next;
 			current->next = newNode;
+			size++;
 		}
 	}
 
@@ -301,7 +308,7 @@ public:
 
 			delete current;
 		}
-
+		size--;
 	}
 
 	CircularLinkedList<T> operator+(const CircularLinkedList<T>& ot) const
@@ -363,12 +370,14 @@ public:
 
 			newNode->next = current->next;
 			current->next = newNode;
+			size++;
 		}
 	}
 
 	void makenull()
 	{
-
+		size = 0;
+		if (head == nullptr) return;
 		CircleListNode<T>* next;
 		CircleListNode<T>* current = head;
 
@@ -436,6 +445,10 @@ public:
 		} while (current != circularLL.head);
 		out << endl;
 		return out;
+	}
+
+	int getSize() {
+		return this->size;
 	}
 
 	~CircularLinkedList() {

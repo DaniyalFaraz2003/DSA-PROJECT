@@ -18,9 +18,6 @@ public:
 	DHT(int bitSize = 0) {
         this->identifierSpace = bitSize;
 
-        /*for (int i : {1, 4, 9, 11, 14, 18, 20, 21, 28}) {
-            this->ring.insertSorted(Machine(BIG_INT(to_string(i))));
-        }*/
 	}
     bool setBitSize(int bitSize) {
         if (bitSize > 0 && bitSize < 161) {
@@ -110,21 +107,41 @@ public:
         
     }
 
-    void insertMachine(BIG_INT machineId) { // this has to be changed for the future
-        // changes to make are to make a folder for a new machine and divmachineIde the files in the machines
-        destroyRoutingTables();
-        if (machineId == BIG_INT("-1")) {
-            string machineName;
-            string hash;
-            cout << "Enter the name of the machine: ";
-            getline(cin, machineName);
+    void insertMachine() { // this has to be changed for the future
+        // changes to make are to make a folder for a new machine and divide machineId e the files in the machines
+        if (BIG_INT(to_string(ring.getSize())) == power(BIG_INT("2"), identifierSpace)) {
+            cout << "DHT is full no more machines can be added" << endl; return;
+        }
+        destroyRoutingTables(); 
+        string machineName, hash; int treeDegree; char idChoice; BIG_INT machineId("0");
+        cout << "Enter the name of the machine: "; getline(cin, machineName);
+        cout << "You want to manually assign id to this machine? (y for yes): "; cin >> idChoice;
+        if (idChoice != 'y') {
             SHA1 digest; digest.update(machineName); hash = digest.final(); machineId = hashMod(hash, identifierSpace);
             while (ring.exists(Machine(machineId))) {
                 cout << "Machine already exists enter name again: "; getline(cin, machineName);
                 digest.update(machineName); hash = digest.final(); machineId = hashMod(hash, identifierSpace);
             }
         }
-        ring.insertSorted(Machine(machineId)); // here we update the Btrees too. and to make a folder in the system for this machine
+        else {
+            cout << "Enter the id you want to assign to this machine: ";
+            getline(cin, hash); BIG_INT id = BIG_INT(hash);
+            while (ring.exists(Machine(id)) || !id.validate() || (id > (power(BIG_INT("2"), identifierSpace) - BIG_INT("1")))) {
+                if (ring.exists(Machine(id))) {
+                    cout << "Machine already exists, enter again: ";
+                }
+                else {
+                    cout << "Invalid Id, enter again: ";
+                }
+                getline(cin, hash);
+                id = BIG_INT(hash);
+            }
+        }
+        cout << "Enter the degree of the B-Tree you want for this machine: "; cin >> treeDegree;
+        while (treeDegree < 3) {
+            cout << "Invalid tree degree, enter again: "; cin >> treeDegree;
+        }
+        ring.insertSorted(Machine(machineId, machineName, treeDegree)); // here we update the Btrees too. and to make a folder in the system for this machine
         makeRoutingTables();
         CircleListNode<Machine>* current = ring.head;
         while (!(current->data.getId() == machineId)) {
@@ -134,6 +151,9 @@ public:
         
     }
     void removeMachine(BIG_INT id) { // implementation to be done.
+        if (ring.isEmpty()) {
+            cout << "No machines in the system" << endl; return;
+        }
         if (!ring.exists(Machine(id))) {
             cout << "Machine does not exist" << endl;
             return;

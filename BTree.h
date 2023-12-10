@@ -22,7 +22,7 @@ public:
     ArrayBasedList<BTreeNode<T>*> children;
     bool leaf;
     BTreeNode<T>* p;
-    BTreeNode(bool isLeaf = false) : leaf(isLeaf), p(nullptr) {}
+    BTreeNode(bool isLeaf = true) : leaf(isLeaf), p(nullptr) {}
 };
 
 template <typename T>

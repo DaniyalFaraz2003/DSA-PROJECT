@@ -21,9 +21,11 @@ public:CircularLinkedList<Machine> ring;
 public:
 	DHT(int bitSize = 0) {
         this->identifierSpace = bitSize;
-        for (int i : {0, 5}) {
+        
+        // for debugging purpose
+        /*for (int i : {2, 4, 13}) {
             ring.insertSorted(Machine(BIG_INT(to_string(i))));
-        }
+        }*/
 	}
     bool setBitSize(int bitSize) {
         if (bitSize > 0 && bitSize < 161) {
@@ -229,7 +231,10 @@ public:
         // now we have the pointer to the machine from which the request has to be generated.
         p = currentMachinePtr->getId();
         while (true) { // search the ring dht using the machine's routing tables
-            if (!(e == p) && (e < p) && (e < currentMachinePtr->getRoutingTable().front()->getId())) { // this means we have found the machine
+            //if (!(e == p) && (e < p) && (e < currentMachinePtr->getRoutingTable().front()->getId())) { // this means we have found the machine
+            //    break;
+            //}
+            if (e <= p && currentMachinePtr == &ring.head->data) {
                 break;
             }
             if (e == p) { // currentMachinePtr contains the file
@@ -239,12 +244,10 @@ public:
                 currentMachinePtr = currentMachinePtr->getRoutingTable().front();
                 break;
             }
-            else if ((p > currentMachinePtr->getRoutingTable().front()->getId())) { // the case where the next machine is the head
+            else if ((p > currentMachinePtr->getRoutingTable().front()->getId()) && (e > p || e <= currentMachinePtr->getRoutingTable().front()->getId())) { // the case where the next machine is the head
                 // here we consider two cases. one in which e is greater than current. and another where e is less than or equal to the head
-                if (e > p || e <= currentMachinePtr->getRoutingTable().front()->getId()) {
-                    currentMachinePtr = currentMachinePtr->getRoutingTable().front();
-                    break;
-                }
+                currentMachinePtr = currentMachinePtr->getRoutingTable().front();
+                break;
             }
             else {
                 for (DoublyLinkedList<Machine*>::Iterator it = currentMachinePtr->getRoutingTable().begin(); it != currentMachinePtr->getRoutingTable().end(); ++it) {
@@ -294,6 +297,7 @@ public:
             BIG_INT p = ring.head->data.getId();
             string hash = SHA1::from_file(path);
             BIG_INT e = hashMod(hash, identifierSpace);
+            cout << "File assigned the id of: " << e.getBIG_INT() << endl;
             Machine* machine = routerSearch(e, p);
             machine->addFile(e, ext(path));
             cout << "file inserted in system with id: " << e.getBIG_INT() << endl;

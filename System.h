@@ -97,6 +97,8 @@ public:
 			case 8:
 				sys.printBtree();
 				break;
+			case 9:
+				break;
 			default:
 				cout << "Invalid choice entered" << endl;
 				break;

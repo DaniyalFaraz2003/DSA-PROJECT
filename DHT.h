@@ -23,7 +23,7 @@ public:
         this->identifierSpace = bitSize;
         
         // for debugging purpose
-        /*for (int i : {5, 9, 11}) {
+        /*for (int i : {5}) {
             ring.insertSorted(Machine(BIG_INT(to_string(i))));
         }*/
 	}
@@ -134,17 +134,18 @@ public:
         }
         else {
             cout << "Enter the id you want to assign to this machine: ";
-            getline(cin, hash); BIG_INT id = BIG_INT(hash);
-            while (validateId(id)) {
-                if (ring.exists(Machine(id))) {
+            getline(cin, hash); machineId = BIG_INT(hash);
+            while (validateId(machineId)) {
+                if (ring.exists(Machine(machineId))) {
                     cout << "Machine already exists, enter again: ";
                 }
                 else {
                     cout << "Invalid Id, enter again: ";
                 }
                 getline(cin, hash);
-                id = BIG_INT(hash);
+                machineId = BIG_INT(hash);
             }
+
         }
         cout << "Enter the degree of the B-Tree you want for this machine: "; cin >> treeDegree;
         while (treeDegree < 3) {
@@ -198,7 +199,6 @@ public:
         else if (!p.validate() || p.getBIG_INT()[0] == '-' || p >= power(BIG_INT("2"), identifierSpace)) return nullptr;
         if (ring.head == ring.head->next) {
             if (p == ring.head->data.getId()) { // this means the machine is there and is the only machine in the system
-                cout << p;
                 return &ring.head->data;
             }
             else {

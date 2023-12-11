@@ -81,7 +81,7 @@ public:
 			case 5:
 				
 				cout << "Enter the id of the file to remove: "; getline(cin, fileId);
-				sys.removeFile(BIG_INT(id));
+				sys.removeFile(BIG_INT(fileId));
 				break;
 			case 6:
 				

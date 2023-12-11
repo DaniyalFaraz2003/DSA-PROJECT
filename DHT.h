@@ -24,9 +24,9 @@ public:
         this->identifierSpace = bitSize;
         handle.createFolder("D:\\storage\\DHT");
         // for debugging purpose
-        for (int i : {8, 10, 25}) {
+        /*for (int i : {8, 10, 25}) {
             ring.insertSorted(Machine(BIG_INT(to_string(i)), to_string(i)));
-        }
+        }*/
 	}
     bool setBitSize(int bitSize) {
         if (bitSize > 0 && bitSize < 161) {
@@ -159,9 +159,9 @@ public:
         while (!(current->data.getId() == machineId)) {
             current = current->next;
         }
-        current->data.shiftFiles('i', current->next->data);
-        // here we create the directory for the current machine
+        // we create the directory for this machine and then shift the files
         handle.createFolder("D:\\storage\\DHT\\" + machineName);
+        current->data.shiftFiles('i', current->next->data);
         
     }
     void removeMachine(BIG_INT id) { // implementation to be done.
@@ -183,9 +183,9 @@ public:
             i++;
         }
         current->data.shiftFiles('d', current->next->data);
+        handle.removeFolder("D:\\storage\\DHT\\" + current->data.getName());
         ring.delete_from_index(i);
         // here we also remove the directory of the machine
-        handle.removeFolder("D:\\storage\\DHT\\" + current->data.getName());
         cout << "machine removed" << endl;
     }
 

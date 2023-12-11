@@ -278,6 +278,7 @@ public:
 						for (LinkedList<string>::Iterator it = current->keys[i].value.begin(); it != current->keys[i].value.end(); ++it) {
 							addFile(current->keys[i].key, getExtension(*it), *it);
 						}
+						handle.removeFolder("D:\\storage\\DHT\\" + other.getName() + "\\" + current->keys[i].key.getBIG_INT());
 					}
 				}
 				

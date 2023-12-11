@@ -188,7 +188,10 @@ public:
         if (res.first == nullptr)
             return;
 
-        if (res.first->leaf)
+        if (!res.first->p && res.first->leaf) {
+            res.first->keys.deleteItem(res.second);
+        }
+        else if (res.first->leaf)
         {
             deleteFromLeaf(res.first, res.second, res.third);
         }

@@ -12,6 +12,7 @@ using namespace std;
 
 class DHT
 {
+    FileHandling handle;
 	int identifierSpace;
     bool validateId(BIG_INT id) { // returns true if id is invalid
         if (id.getBIG_INT()[0] == '-') return true;
@@ -21,11 +22,11 @@ public:CircularLinkedList<Machine> ring;
 public:
 	DHT(int bitSize = 0) {
         this->identifierSpace = bitSize;
-        
+        handle.createFolder("D:\\storage\\DHT");
         // for debugging purpose
-        /*for (int i : {5}) {
-            ring.insertSorted(Machine(BIG_INT(to_string(i))));
-        }*/
+        for (int i : {8, 10, 25}) {
+            ring.insertSorted(Machine(BIG_INT(to_string(i)), to_string(i)));
+        }
 	}
     bool setBitSize(int bitSize) {
         if (bitSize > 0 && bitSize < 161) {
@@ -159,6 +160,8 @@ public:
             current = current->next;
         }
         current->data.shiftFiles('i', current->next->data);
+        // here we create the directory for the current machine
+        handle.createFolder("D:\\storage\\DHT\\" + machineName);
         
     }
     void removeMachine(BIG_INT id) { // implementation to be done.
@@ -181,6 +184,8 @@ public:
         }
         current->data.shiftFiles('d', current->next->data);
         ring.delete_from_index(i);
+        // here we also remove the directory of the machine
+        handle.removeFolder("D:\\storage\\DHT\\" + current->data.getName());
         cout << "machine removed" << endl;
     }
 
@@ -320,7 +325,7 @@ public:
             BIG_INT e = hashMod(hash, identifierSpace);
             cout << "File assigned the id of: " << e.getBIG_INT() << endl;
             Machine* machine = routerSearch(e, p);
-            machine->addFile(e, ext(path));
+            machine->addFile(e, ext(path), path);
             cout << "file inserted in system with id: " << e.getBIG_INT() << endl;
             file.close();
         }
@@ -372,6 +377,10 @@ public:
         Machine* machine = routerSearch(e, p);
         machine->removeFile(e);
         cout << "file removed" << endl;
+    }
+    ~DHT() {
+        this->ring.makenull();
+        handle.removeFolder("D:\\storage\\DHT");
     }
 };
 

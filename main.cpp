@@ -48,15 +48,17 @@ int main() {
 	System sys; sys.start();
 	/*DHT sys;
 	sys.setBitSize(5);
-	sys.makeRoutingTables();
-	sys.printRoutingTable();*/
+	sys.makeRoutingTables();*/
 	/*BIG_INT e, p;
 	e = BIG_INT("13");
 	p = BIG_INT("5");
 	Machine* m = sys.routerSearch(e, p);
 	if (m != nullptr) cout << m->getId();*/
-	/*sys.addFile("D:\\DSA Project\\DSA Project\\dht.png");
-	sys.addFile("D:\\DSA Project\\DSA Project\\btree.dot");
-	sys.addFile("D:\\DSA Project\\DSA Project\\btree.png");*/
+	//sys.addFile("D:\\dummy\\main.asm");
+	//sys.addFile("D:\\dummy\\another.docx");
+	//sys.addFile("D:\\dummy\\file.txt");
+	////sys.showMachines();
+	//sys.removeFile(BIG_INT("11"));
+	//sys.printBtree();
 	return 0;
 }

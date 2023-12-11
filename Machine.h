@@ -7,6 +7,7 @@
 #include "BigInt.h"
 #include "DoublyLL.h"
 #include "SinglyLL.h"
+#include "Filehandling.h"
 using namespace std;
 
 template <class T, class U>
@@ -34,6 +35,7 @@ struct KeyValuePair {
 
 class Machine
 {
+	FileHandling handle;
 	BIG_INT id;
 	string name;
 	BTree<KeyValuePair<BIG_INT, LinkedList<string>>> indexTree;
@@ -136,6 +138,10 @@ public:
 		return indexTree.getRoot();
 	}
 
+	string getName() {
+		return this->name;
+	}
+
 	void addRoutingTableEntry(Machine* val) {
 		router.push(val);
 	}
@@ -159,9 +165,10 @@ public:
 		}
 	}
 
-	void addFile(BIG_INT id, string extension, const string& filename = "") {
+	void addFile(BIG_INT id, string extension, const string filepath) {
 		KeyValuePair<BIG_INT, LinkedList<string>> data; data.key = id; 
-		string path = "D:\DHT\\" + name + "\\" + id.getBIG_INT() + "\\";
+		handle.createFolderIfNotExists("D:\\storage\\DHT\\" + name + "\\" + id.getBIG_INT());
+		string path = "D:\\storage\\DHT\\" + name + "\\" + id.getBIG_INT() + "\\";
 		Pair<BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>*, int, int> res = indexTree.search(data);
 		if (res.first == nullptr) { // if this id is not already present then just insert the node
 			path += "file_" + id.getBIG_INT() + '_' + to_string(data.value.getSize()) + extension;
@@ -169,10 +176,12 @@ public:
 			indexTree.insert(data);
 		}
 		else { // collision. here we chain the situation.
-			res.first->keys[res.second].value.push(path + filename + "_file_" + to_string(res.first->keys[res.second].value.getSize()));
+			path += "file_" + res.first->keys[res.second].key.getBIG_INT() + "_" + to_string(res.first->keys[res.second].value.getSize()) + extension;
+			res.first->keys[res.second].value.push(path);
 			cout << res.first->keys[res.second].value;
 		}
 		// and add the actual file to the path too.
+		handle.copyFile(filepath, path);
 	}
 
 	void removeFile(BIG_INT id) {
@@ -184,6 +193,8 @@ public:
 		}; // if not there so return
 		if (res.first->keys[res.second].value.getSize() == 1) { // only one value of this hash so delete the whole key
 			indexTree.deleteNode(data);
+			// here we delete the whole folder with the specific key too
+			handle.removeFolder("D:\\storage\\DHT\\" + name + "\\" + id.getBIG_INT());
 		}
 		else { // here multiple values of this id so delete from its chain
 			int count = 0;
@@ -193,9 +204,17 @@ public:
 			}
 			int choice;
 			cout << "Enter which file to delete: "; cin >> choice;
-			if (choice - 1 <= res.first->keys[res.second].value.getSize()) {
+			if (choice > 0 && choice - 1 <= res.first->keys[res.second].value.getSize()) {
+				string path; int count = 0;
+				for (LinkedList<string>::Iterator it = res.first->keys[res.second].value.begin(); it != res.first->keys[res.second].value.end(); ++it) {
+					path = *it;
+					if (count == (choice - 1)) break;
+					count++;
+				}
 				res.first->keys[res.second].value.delete_from_index(choice);
 				cout << res.first->keys[res.second].value;
+				// and here we do not have to delete the whole folder just the path of the file
+				handle.removeFile(path);
 			}
 			else {
 				cout << "invalid choice entered" << endl;
@@ -257,7 +276,7 @@ public:
 						// here we need to move files too but that is later work
 						dataToBeDeleted.push(current->keys[i]);
 						for (LinkedList<string>::Iterator it = current->keys[i].value.begin(); it != current->keys[i].value.end(); ++it) {
-							addFile(current->keys[i].key, getExtension(*it));
+							addFile(current->keys[i].key, getExtension(*it), *it);
 						}
 					}
 				}
@@ -285,7 +304,7 @@ public:
 				{
 					// here we need to move files too but that is later work
 					for (LinkedList<string>::Iterator it = current->keys[i].value.begin(); it != current->keys[i].value.end(); ++it) {
-						other.addFile(current->keys[i].key, getExtension(*it));
+						other.addFile(current->keys[i].key, getExtension(*it), *it);
 					}
 					
 				}

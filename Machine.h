@@ -238,8 +238,8 @@ public:
 	}
 
 	void shiftFiles(char mode, Machine& other) {
-		if (this->indexTree.getRoot() == nullptr || other.indexTree.getRoot() == nullptr) return;
 		if (mode == 'i') { // if insert is mode then we add other's files with id e where e <= currentMachineId
+			if (other.indexTree.getRoot() == nullptr) return;
 			BIG_INT thisId = id;
 			BIG_INT nextId = other.getId();
 			// now we do level order traversal of others Btree and insert these files in this's Btree
@@ -273,6 +273,7 @@ public:
 		}
 		else if (mode == 'd') { // if delete is mode then we empty this machines files into other
 			// now we do level order traversal of others Btree and insert these files in this's Btree
+			if (this->indexTree.getRoot() == nullptr) return;
 			Queue<BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>*> levelOrderQueue;
 			levelOrderQueue.enqueue(this->indexTree.getRoot());
 			while (!levelOrderQueue.isEmpty())

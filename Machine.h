@@ -3,6 +3,9 @@
 #define MACHINE_H
 
 #include <fstream>
+#include <ctime>
+#include <chrono>
+#include <thread>
 #include "BTree.h"
 #include "BigInt.h"
 #include "DoublyLL.h"
@@ -194,6 +197,7 @@ public:
 		if (res.first->keys[res.second].value.getSize() == 1) { // only one value of this hash so delete the whole key
 			indexTree.deleteNode(data);
 			// here we delete the whole folder with the specific key too
+			cout << "file removed" << endl;
 			handle.removeFolder("D:\\storage\\DHT\\" + name + "\\" + id.getBIG_INT());
 		}
 		else { // here multiple values of this id so delete from its chain
@@ -213,6 +217,7 @@ public:
 				}
 				res.first->keys[res.second].value.delete_from_index(choice);
 				cout << res.first->keys[res.second].value;
+				cout << "file removed" << endl;
 				// and here we do not have to delete the whole folder just the path of the file
 				handle.removeFile(path);
 			}

@@ -272,13 +272,25 @@ public:
 
 				for (int i = 0; i < current->keys.getSize(); i++)
 				{
-					if (current->keys[i].key <= thisId) {
-						// here we need to move files too but that is later work
-						dataToBeDeleted.push(current->keys[i]);
-						for (LinkedList<string>::Iterator it = current->keys[i].value.begin(); it != current->keys[i].value.end(); ++it) {
-							addFile(current->keys[i].key, getExtension(*it), *it);
+					if (thisId < nextId) { // the case where the next machine is not head
+						if (current->keys[i].key <= thisId) {
+							// here we need to move files too but that is later work
+							dataToBeDeleted.push(current->keys[i]);
+							for (LinkedList<string>::Iterator it = current->keys[i].value.begin(); it != current->keys[i].value.end(); ++it) {
+								addFile(current->keys[i].key, getExtension(*it), *it);
+							}
+							handle.removeFolder("D:\\storage\\DHT\\" + other.getName() + "\\" + current->keys[i].key.getBIG_INT());
 						}
-						handle.removeFolder("D:\\storage\\DHT\\" + other.getName() + "\\" + current->keys[i].key.getBIG_INT());
+					}
+					else { // now next machine is head. we need to be careful here while transferring files
+						if (current->keys[i].key <= thisId && current->keys[i].key > nextId) {
+							// here we need to move files too but that is later work
+							dataToBeDeleted.push(current->keys[i]);
+							for (LinkedList<string>::Iterator it = current->keys[i].value.begin(); it != current->keys[i].value.end(); ++it) {
+								addFile(current->keys[i].key, getExtension(*it), *it);
+							}
+							handle.removeFolder("D:\\storage\\DHT\\" + other.getName() + "\\" + current->keys[i].key.getBIG_INT());
+						}
 					}
 				}
 				

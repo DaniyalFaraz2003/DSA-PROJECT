@@ -186,6 +186,7 @@ public:
             ring.pop(); cout << "machine removed" << endl;
             return;
         }
+        destroyRoutingTables();
         int i = 0;
         CircleListNode<Machine>* current = ring.head;
         while (!(current->data.getId() == id)) {
@@ -195,6 +196,7 @@ public:
         current->data.shiftFiles('d', current->next->data);
         handle.removeFolder("D:\\storage\\DHT\\" + current->data.getName());
         ring.delete_from_index(i);
+        makeRoutingTables();
         // here we also remove the directory of the machine
         cout << "machine removed" << endl;
     }

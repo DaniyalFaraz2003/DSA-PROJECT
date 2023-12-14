@@ -37,11 +37,11 @@ public:
     {
         root = nullptr;
     }
-
+    //function to set the degree of BTree
     void setDegree(int degree) {
         m = degree;
     }
-
+    //searches for the key in BTree
     Pair<BTreeNode<T>*, int, int> search(T key, BTreeNode<T>* node = nullptr, int childIndex = 0)
     {
         if (root == nullptr) return { nullptr, -1, -1 };
@@ -54,19 +54,19 @@ public:
         }
 
         if (i < node->keys.getSize() && key == node->keys[i])
-        {
+        {   //if the key is found, the function gives the information about its location
             return { node, i, childIndex };
         }
         else if (node->leaf)
-        {
+        {   //if its a leaf node, then it gives information that the key is not present
             return { nullptr, -1, -1 };
         }
         else
-        {
+        {   //performs recursive search
             return search(key, node->children[i], i);
         }
     }
-
+   //function to search for the insertion position of a key
     Pair<BTreeNode<T>*, int, int> searchForInsert(T key, BTreeNode<T>* node = nullptr, int childIndex = 0)
     {
         node = (node == nullptr) ? root : node;
@@ -78,26 +78,28 @@ public:
         }
 
         if (i < node->keys.getSize() && key == node->keys[i])
-        {
+        {  //if the key is found, information about its location is returned
             return { node, i, childIndex };
         }
         else if (node->leaf)
-        {
+        {   //if the key is not found, it returns the information that the key should be inserted in this node
             return { node, -1, childIndex };
         }
         else
-        {
+        {    //recursive search
             return searchForInsert(key, node->children[i], i);
         }
     }
-
+    //function to set leaf nodes in the BTree
     void setLeafNodes() {
         Queue<BTreeNode<T>*> levelOrderQueue;
         levelOrderQueue.enqueue(root);
         root->p = nullptr;
+        //processing the nodes until the queue is empty
         while (!levelOrderQueue.isEmpty()) {
             BTreeNode<T>* current = levelOrderQueue.head();
             levelOrderQueue.dequeue();
+            //checks if the current node has no children
             if (current->children.getSize() == 0) {
                 current->leaf = true;
             }
@@ -111,7 +113,7 @@ public:
     }
 
 
-
+    //inserting a key in a BTree
     void insert(T k)
     {
         if (root == nullptr) {
@@ -147,7 +149,7 @@ public:
                 for (int i = 0; i < node->p->children.getSize(); i++) {
                     if (node == node->p->children[i]) break;
                     currentChildIndex++;
-                }
+                }  //updating the children with left and right nodes
                 node->p->children[currentChildIndex] = leftNode;
                 node->p->children.insert(rightNode, currentChildIndex + 1);
                 leftNode->p = node->p; rightNode->p = node->p;
@@ -165,6 +167,7 @@ public:
     }
 
     void manageChilds(BTreeNode<T>* node, BTreeNode<T>* left, BTreeNode<T>* right, int mid) {
+        //moving children to the left child node
         for (int i = 0, j = 0; i <= mid; i++, j++) {
             if (i < node->children.getSize()) {
                 left->children.push(node->children[i]);
@@ -172,6 +175,7 @@ public:
                 left->leaf = false;
             }
         }
+        //moving children to the right child node
         for (int i = mid + 1, j = 0; i <= m; i++, j++) {
             if (i < node->children.getSize()) {
                 right->children.push(node->children[i]);
@@ -187,16 +191,16 @@ public:
         Pair<BTreeNode<T>*, int, int> res = search(val);
         if (res.first == nullptr)
             return;
-
+         //if node is a leaf and not the root 
         if (!res.first->p && res.first->leaf) {
             res.first->keys.deleteItem(res.second);
         }
         else if (res.first->leaf)
-        {
+        {   //if the node is a leaf
             deleteFromLeaf(res.first, res.second, res.third);
         }
         else
-        {
+        {   //when its an internal node
             deleteInternalNode(res.first, res.second, res.third);
         }
     }
@@ -228,7 +232,7 @@ public:
                 rightSibling->keys.popFront();
             }
             else
-            { // here we see that we cannot borrow from anyof the siblings then we merge this shit by checking where we can merge the node. left or right
+            { // here we see that we cannot borrow from any of the siblings then we merge by checking where we can merge the node. left or right
                 if (childIndex == 0)
                 { // then only right merging is possible
                     BTreeNode<T>* rightSibling = node->p->children[childIndex + 1];
@@ -319,7 +323,7 @@ public:
                         right->children.popFront();
                     }
                     else
-                    { // here we see that we cannot borrow from anyof the siblings then we merge this shit by checking where we can merge the node. left or right
+                    { // here we see that we cannot borrow from any of the siblings then we merge by checking where we can merge the node. left or right
                         if (j == 0)
                         { // then only right merging is possible
                             BTreeNode<T>* right = current->p->children[j + 1];
@@ -468,7 +472,7 @@ public:
     BTreeNode<T>* getRoot() { return this->root; }
 
     void printTree(BTreeNode<T>* x, int level = 0)
-    {
+    {  //function to print the BTree
         std::cout << "Level " << level << ": ";
         for (int i = 0; i < x->keys.getSize(); i++)
         {
@@ -485,9 +489,9 @@ public:
             }
         }
     }
-
+   //destructor for BTree
     ~BTree() {
-
+ 
         BTreeNode<T>* rootnode = getRoot();
         if (rootnode == nullptr) return;
         Queue<BTreeNode<T>*> q;

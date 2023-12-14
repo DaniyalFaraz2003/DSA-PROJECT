@@ -14,7 +14,7 @@ public:
 	T data;
 	DoubleListNode* next;
 	DoubleListNode* prev;
-
+	//constructor
 	DoubleListNode(T data) : data(data), next(nullptr), prev(nullptr) {}
 };
 
@@ -26,7 +26,9 @@ class DoublyLinkedList
 	DoubleListNode<T>* tail;
 
 public:
+	//constructor
 	DoublyLinkedList() : head(nullptr), tail(nullptr) {}
+	//copy constructor
 	DoublyLinkedList(const DoublyLinkedList<T>& other)
 	{
 		if (other.head == nullptr) {
@@ -43,7 +45,7 @@ public:
 			curr = curr->next;
 		}
 	}
-
+	//overloading the assignment operator
 	DoublyLinkedList<T> operator=(const DoublyLinkedList<T>& other)
 	{
 		if (other.head == nullptr) {
@@ -62,7 +64,7 @@ public:
 		}
 		return *this;
 	}
-
+	//Iterator class for the linked list
 	class Iterator
 	{
 
@@ -105,29 +107,29 @@ public:
 			return node != ot.node;
 		}
 	};
-
+	//returns an iterator pointing to the beginning of the list
 	Iterator begin() const
 	{
 
 		return Iterator(head);
 	}
-
+	//returns an iterator pointing to the end of the list
 	Iterator end() const
 	{
 
 		return Iterator(nullptr);
 	}
-
+	//returns a reference to the data in front node
 	T& front() {
 		return this->head->data;
 	}
-
+	//checks if the list is empty
 	bool isEmpty()
 	{
 
 		return head == nullptr;
 	}
-
+	//pushes a new node to the end of the list
 	void push(T value)
 	{
 
@@ -147,7 +149,7 @@ public:
 			tail = newNode;
 		}
 	}
-
+	//pushes a new node to the front of the list
 	void push_front(T value)
 	{
 
@@ -167,7 +169,7 @@ public:
 			head = newNode;
 		}
 	}
-
+	//deletes a node from the front of the list
 	T pop_front()
 	{
 
@@ -198,7 +200,7 @@ public:
 
 		return deletedValue;
 	}
-
+	//deletes a node from the end of the list
 	T pop()
 	{
 
@@ -228,7 +230,7 @@ public:
 
 		return deletedValue;
 	}
-
+	//inserts a new node at a specified index
 	void insert_at_index(int index, T value)
 	{
 
@@ -285,7 +287,7 @@ public:
 			current->next = newNode;
 		}
 	}
-
+	//deletes a node from a specified index in the list
 	T delete_from_index(int index)
 	{
 
@@ -358,7 +360,7 @@ public:
 			return value;
 		}
 	}
-
+	//clears the list, frees up memory
 	void makenull()
 	{
 
@@ -375,7 +377,7 @@ public:
 
 		head = nullptr;
 	}
-
+	//searches for the specified value in the list and returns it if found
 	T search(const T& value)
 	{
 
@@ -393,7 +395,7 @@ public:
 			current = current->next;
 		}
 	}
-
+	//checks if a value exists in the list and returns true if it does
 	T exists(const T& value)
 	{
 
@@ -413,7 +415,7 @@ public:
 
 		return false;
 	}
-
+	//concatenates two lists
 	DoublyLinkedList<T> operator+(const DoublyLinkedList<T>& l1) const
 	{
 
@@ -427,10 +429,10 @@ public:
 
 		return resultant;
 	}
-
+	//overloading the ostream operator to print the list
 	friend ostream& operator<<(ostream& out, const DoublyLinkedList<T>& DoublyLL)
 	{
-		
+
 		DoubleListNode<T>* currNode = DoublyLL.head;
 		if (currNode == nullptr) return out;
 		for (Iterator it = DoublyLL.begin(); it != DoublyLL.end(); ++it)
@@ -448,7 +450,7 @@ public:
 		out << endl;
 		return out;
 	}
-
+	//destructor
 	~DoublyLinkedList() {
 		makenull();
 	}

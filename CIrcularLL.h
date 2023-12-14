@@ -14,6 +14,7 @@ public:
 	T data;
 	CircleListNode* next;
 
+	//constructor
 	CircleListNode(T data) : data(data), next(nullptr) {}
 };
 
@@ -23,13 +24,17 @@ class CircularLinkedList
 	int size = 0;
 public:
 	CircleListNode<T>* head;
+	//default constructor
 	CircularLinkedList() : head(nullptr) {}
+	//copy constructor
 	CircularLinkedList(const CircularLinkedList<T>& other)
 	{
 		if (other.head == nullptr) return;
+		//copy the head node
 		this->head = new CircleListNode<T>(other.head->data);
 		CircleListNode<T>* curr = other.head->next;
 		CircleListNode<T>* Next = this->head;
+		//copy the rest of the nodes
 		while (curr)
 		{
 			Next->next = new CircleListNode<T>(curr->data);
@@ -40,7 +45,7 @@ public:
 		}
 		Next->next = this->head;
 	}
-
+	//overloading the assignment operator
 	CircularLinkedList<T> operator=(const CircularLinkedList<T>& other)
 	{
 		if (other.head == nullptr) {
@@ -55,6 +60,7 @@ public:
 		{
 			Next->next = new CircleListNode<T>(curr->data);
 			Next = Next->next;
+			//break the loop if next node is the head 
 			if (curr->next == other->head)
 				break;
 			curr = curr->next;
@@ -62,13 +68,13 @@ public:
 		Next->next = this->head;
 		return *this;
 	}
-
+	// checks if the list is empty
 	bool isEmpty() const
 	{
 
 		return head == nullptr;
 	}
-
+	//pushes a new node to the end of the list
 	void push(T value)
 	{
 
@@ -76,16 +82,19 @@ public:
 
 		if (isEmpty())
 		{
-
+			//if list is empty, set the new node as the head
 			head = newNode;
 			head->next = head;
 		}
 
 		else
 		{
+			//traverse to the end and connect the new node  
 			CircleListNode<T>* currNode = head;
+
 			while (currNode->next != head)
 			{
+
 				currNode = currNode->next;
 			}
 
@@ -94,29 +103,37 @@ public:
 		}
 		size++;
 	}
-
+	//pushes a new node to the front of the list
 	void push_front(T value)
 	{
+
 		CircleListNode<T>* newNode = new CircleListNode<T>(value);
+
 		if (isEmpty())
 		{
+			//if list is empty, set the new node as the head
 			head = newNode;
 			head->next = head;
 		}
+
 		else
 		{
+
 			CircleListNode<T>* currNode = head;
+			//traverse to the end and connect the new node
 			while (currNode->next != head)
 			{
+
 				currNode = currNode->next;
 			}
+
 			currNode->next = newNode;
 			newNode->next = head;
 			head = newNode;
 		}
 		size++;
 	}
-
+	//pop the front node of the list
 	void pop_front()
 	{
 
@@ -130,16 +147,20 @@ public:
 
 		while (tempNode->next != head)
 		{
+
 			tempNode = tempNode->next;
 		}
 
 		if (tempNode == head)
 		{
+			//when there is only one node, we delete it and set the head to nullptr
 			delete tempNode;
 			head = nullptr;
 		}
+
 		else
 		{
+			//delete the front node by updating connections in the list
 			tempNode->next = head->next;
 			delete head;
 			head = tempNode->next;
@@ -147,35 +168,44 @@ public:
 		size--;
 		return;
 	}
+	//pop the last node of the list
 	void pop()
 	{
+
+
 		if (isEmpty())
 		{
+
 			cout << "List is empty \n";
 			return;
 		}
+
 		CircleListNode<T>* prevNode = nullptr;
 		CircleListNode<T>* currNode = head;
+
 		while (currNode->next != head)
 		{
+
 			prevNode = currNode;
 			currNode = currNode->next;
 		}
 
 		if (currNode == head)
 		{
-
+			//when there is only one node, we delete it and set the head to nullptr
 			delete head;
 			head = nullptr;
 		}
+
 		else
 		{
+			//delete the node by updating connections
 			prevNode->next = head;
 			delete currNode;
 		}
 		size--;
 	}
-
+	//insert a node at a specific index
 	void insert_at_index(int index, T value)
 	{
 
@@ -189,7 +219,7 @@ public:
 
 		if (index == 0)
 		{
-
+			//if insertion is at the beginning, set the new node as the head
 			head = newNode;
 			head->next = head;
 			size++;
@@ -199,7 +229,7 @@ public:
 		{
 
 			CircleListNode<T>* current = head;
-
+			//traverse to the index specified and insert the new node
 			for (int i = 0; i < index - 1 && current != head; ++i)
 			{
 
@@ -219,7 +249,7 @@ public:
 			size++;
 		}
 	}
-
+	//deletes a node from a specific index
 	void delete_from_index(int index)
 	{
 
@@ -233,7 +263,7 @@ public:
 
 		if (index == 0)
 		{
-
+			//deletion of the front node
 			CircleListNode<T>* tempNode = head;
 
 			if (head->next == head)
@@ -265,7 +295,7 @@ public:
 
 			CircleListNode<T>* current = head;
 			CircleListNode<T>* prevNode = nullptr;
-
+			//traverse to the specified index and delete the node
 			for (int i = 0; i < index && current->next != head; ++i)
 			{
 
@@ -286,7 +316,7 @@ public:
 		}
 		size--;
 	}
-
+	//concatenates two circular linked lists
 	CircularLinkedList<T> operator+(const CircularLinkedList<T>& ot) const
 	{
 
@@ -322,7 +352,7 @@ public:
 
 		return resultant;
 	}
-
+	//inserts value in the list in a sorted manner
 	void insertSorted(T value)
 	{
 
@@ -337,7 +367,7 @@ public:
 
 			CircleListNode<T>* newNode = new CircleListNode<T>(value);
 			CircleListNode<T>* current = head;
-
+			//traverse the list to find the correct position to insert the value
 			while (current->next != head && current->next->data < value)
 			{
 
@@ -349,7 +379,7 @@ public:
 			size++;
 		}
 	}
-
+	//clears the list, frees up memory
 	void makenull()
 	{
 		size = 0;
@@ -368,7 +398,7 @@ public:
 
 		head = nullptr;
 	}
-
+	//returns the value if it is found in the list
 	T search(const T& value)
 	{
 
@@ -386,7 +416,7 @@ public:
 			current = current->next;
 		}
 	}
-
+	//returns true if a value exists in the list, else it returns false
 	bool exists(const T& value)
 	{
 		if (isEmpty()) return false;
@@ -406,7 +436,7 @@ public:
 		if (current->data == value) return true;
 		return false;
 	}
-
+	//overloading ostream operator to print the list
 	friend ostream& operator<<(ostream& out, const CircularLinkedList<T>& circularLL)
 	{
 
@@ -422,11 +452,11 @@ public:
 		out << endl;
 		return out;
 	}
-
+	//returns size of the list
 	int getSize() {
 		return this->size;
 	}
-
+	//destructor 
 	~CircularLinkedList() {
 		makenull();
 	}

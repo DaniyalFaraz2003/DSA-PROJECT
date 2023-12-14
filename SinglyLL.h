@@ -34,7 +34,7 @@ class ListNode
 public:
 	T data;
 	ListNode* next;
-
+	//constructor
 	ListNode(T data) : data(data), next(nullptr) {}
 };
 
@@ -45,7 +45,9 @@ class LinkedList
 	ListNode<T>* head;
 
 public:
+	//constructor
 	LinkedList() : head(nullptr) {}
+	//copy constructor
 	LinkedList(const LinkedList<T>& other)
 	{
 		if (other.head == nullptr) {
@@ -63,7 +65,7 @@ public:
 			curr = curr->next;
 		}
 	}
-
+	//overloading the assignment operator
 	LinkedList<T> operator=(const LinkedList<T>& other)
 	{
 		if (other.head == nullptr) {
@@ -83,7 +85,7 @@ public:
 		}
 		return *this;
 	}
-
+	//Iterator class for the linked list
 	class Iterator
 	{
 
@@ -122,25 +124,25 @@ public:
 			return node != ot.node;
 		}
 	};
-
+	//returns an iterator pointing to the beginning of the list
 	Iterator begin() const
 	{
 
 		return Iterator(head);
 	}
-
+	//returns an iterator pointing to the end of the list
 	Iterator end() const
 	{
 
 		return Iterator(nullptr);
 	}
-
+	//checks if the list is empty
 	bool isEmpty()
 	{
 
 		return head == nullptr;
 	}
-
+	//pushes a new node to the end of the list
 	void push(T value)
 	{
 
@@ -167,7 +169,7 @@ public:
 		}
 		size++;
 	}
-
+	//pushes a new node to the front of the list
 	void push_front(T value)
 	{
 
@@ -176,7 +178,7 @@ public:
 		head = newNode;
 		size++;
 	}
-
+	//deletes a node from the front of the list
 	T pop_front()
 	{
 
@@ -196,7 +198,7 @@ public:
 		delete temp;
 		return value;
 	}
-
+	//deletes a node from the end of the list
 	T pop()
 	{
 
@@ -233,7 +235,7 @@ public:
 		prevNode->next = nullptr;
 		return val;
 	}
-
+	//inserts a node at a specified index in the list
 	void insert_at_index(int index, T value)
 	{
 
@@ -276,7 +278,7 @@ public:
 			size++;
 		}
 	}
-
+	//deletes a node from a specified index in the list
 	T delete_from_index(int index)
 	{
 
@@ -327,7 +329,7 @@ public:
 			return value;
 		}
 	}
-
+	//clears the list, frees it from memory
 	void makenull()
 	{
 		if (head == nullptr) return;
@@ -345,7 +347,7 @@ public:
 		head = nullptr;
 	}
 
-
+	//searches for a value in the list and returns it if found
 	T search(const T& value)
 	{
 
@@ -363,7 +365,7 @@ public:
 			current = current->next;
 		}
 	}
-
+	//checks if a value exists in the list
 	T exists(const T& value)
 	{
 
@@ -383,7 +385,7 @@ public:
 
 		return false;
 	}
-
+	//concatenates two lists
 	LinkedList<T> operator+(const LinkedList<T>& l1) const
 	{
 
@@ -397,7 +399,7 @@ public:
 
 		return resultant;
 	}
-
+	//overloading the ostream operator to print the list
 	friend ostream& operator<<(ostream& out, const LinkedList<T>& singlyLL)
 	{
 
@@ -418,11 +420,11 @@ public:
 		out << endl;
 		return out;
 	}
-
+	//returns the size of the list
 	int getSize() {
 		return this->size;
 	}
-
+	//function to delete a node containing a specific substring in its data
 	template <typename string>
 	void deleteNodeByString(const string filename) {
 		if (isEmpty())
@@ -431,7 +433,7 @@ public:
 			return;
 		}
 		if (isSubstring(filename, head->data))
-		{
+		{       //if the substring is present in the head node's data, we delete the head node
 			ListNode<string>* tempNode = head;
 			head = head->next;
 			size--;
@@ -442,6 +444,7 @@ public:
 		{
 			ListNode<string>* current = head;
 			ListNode<string>* prevNode = nullptr;
+			//traverse the list until the substring is found
 			for (int i = 0; current != nullptr && !isSubstring(filename, current->data); ++i)
 			{
 				prevNode = current;
@@ -457,7 +460,7 @@ public:
 			delete current;
 		}
 	}
-
+	//destructor
 	~LinkedList() {
 		makenull();
 	}

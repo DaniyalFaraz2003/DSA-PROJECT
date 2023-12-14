@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include "System.h"
+#include "sha1.hpp"
 using namespace std;
 
 
@@ -46,6 +47,7 @@ using namespace std;
 
 int main() {
 	System sys; sys.start();
+
 	/*DHT sys;
 	sys.setBitSize(5);
 	sys.makeRoutingTables();

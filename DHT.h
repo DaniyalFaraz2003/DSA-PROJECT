@@ -25,6 +25,7 @@ public:CircularLinkedList<Machine> ring;
 public:
 	DHT(int bitSize = 0) {
         this->identifierSpace = bitSize;
+        handle.createFolder("D:\\storage");
         handle.createFolder("D:\\storage\\DHT");
         // for debugging purpose
         /*for (int i : {8, 10, 25}) {
@@ -170,7 +171,7 @@ public:
             current = current->next;
         }
         // we create the directory for this machine and then shift the files
-        handle.createFolder("D:\\storage\\DHT\\" + machineName);
+        handle.createFolder("D:\\storage\\DHT\\" + machineName + "_" + machineId.getBIG_INT());
         current->data.shiftFiles('i', current->next->data);
         cout << "Machine Inserted With Name: " << machineName << endl; cout << "Id Assigned To This Machine: " << machineId.getBIG_INT() << endl;
     }
@@ -231,57 +232,57 @@ public:
         cout << "Finding The Origin Machine"; this_thread::sleep_for(chrono::seconds(1)); cout << "."; this_thread::sleep_for(chrono::seconds(1)); cout << ".";
         this_thread::sleep_for(chrono::seconds(1)); cout << "." << endl;
         Machine* currentMachinePtr = &ring.head->data;
-        cout << "Control Passed To The Head Machine: " << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << endl;
+        cout << "Control Passed To The Head Machine: " << currentMachinePtr->getName() << endl;
         while (!(p == currentMachinePtr->getId())) {
             this_thread::sleep_for(chrono::seconds(1));
             if (p < currentMachinePtr->getId() && currentMachinePtr == &ring.head->data) {
                 break;
             }
             else if (p > currentMachinePtr->getId() && p <= currentMachinePtr->getRoutingTable().front()->getId()) {
-                cout << "Control Passed From [" << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << "] To [";
+                cout << "Control Passed From [" << currentMachinePtr->getName() << "] To [";
                 currentMachinePtr = currentMachinePtr->getRoutingTable().front();
-                cout << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << "]" << endl;
+                cout << currentMachinePtr->getName() << "]" << endl;
                 break;
             }
             else if (p > currentMachinePtr->getId() && currentMachinePtr->getRoutingTable().front()->getId() < currentMachinePtr->getId()) { // case where next is head
-                cout << "Control Passed From [" << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << "] To [";
+                cout << "Control Passed From [" << currentMachinePtr->getName() << "] To [";
                 currentMachinePtr = currentMachinePtr->getRoutingTable().front();
-                cout << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << "]" << endl;
+                cout << currentMachinePtr->getName() << "]" << endl;
                 break;
             }
             else if (p < currentMachinePtr->getId() && currentMachinePtr->getRoutingTable().front()->getId() < currentMachinePtr->getId()) { // case where next is head
-                cout << "Control Passed From [" << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << "] To [";
+                cout << "Control Passed From [" << currentMachinePtr->getName() << "] To [";
                 currentMachinePtr = currentMachinePtr->getRoutingTable().front();
-                cout << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << "]" << endl;
+                cout << currentMachinePtr->getName() << "]" << endl;
                 break;
             }
             else {
-                cout << "Traversing The Routing Table Of Machine: [" << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << "]" << endl;
+                cout << "Traversing The Routing Table Of Machine: [" << currentMachinePtr->getName() << "]" << endl;
                 for (DoublyLinkedList<Machine*>::Iterator it = currentMachinePtr->getRoutingTable().begin(); it != currentMachinePtr->getRoutingTable().end(); ++it) {
                     if (it + 1 == nullptr) {
                         if (currentMachinePtr->getId() == (*it)->getId()) {
-                            cout << "Control Passed From [" << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << "] To [";
+                            cout << "Control Passed From [" << currentMachinePtr->getName() << "] To [";
                             currentMachinePtr = currentMachinePtr->getRoutingTable().front();
-                            cout << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << "]" << endl;
+                            cout << currentMachinePtr->getName() << "]" << endl;
                         }
                         else {
-                            cout << "Control Passed From [" << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << "] To [";
+                            cout << "Control Passed From [" << currentMachinePtr->getName() << "] To [";
                             currentMachinePtr = *it;
-                            cout << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << "]" << endl;
+                            cout << currentMachinePtr->getName() << "]" << endl;
                         }
                         break;
                     }
                     else {
                         if (p > (*it)->getId() && (*it)->getId() > (it + 1)->data->getId()) { // the case the where the next machine is the head
-                            cout << "Control Passed From [" << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << "] To [";
+                            cout << "Control Passed From [" << currentMachinePtr->getName() << "] To [";
                             currentMachinePtr = *it;
-                            cout << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << "]" << endl;
+                            cout << currentMachinePtr->getName() << "]" << endl;
                             break;
                         }
                         if (p > (*it)->getId() && p <= (it + 1)->data->getId()) {
-                            cout << "Control Passed From [" << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << "] To [";
+                            cout << "Control Passed From [" << currentMachinePtr->getName() << "] To [";
                             currentMachinePtr = *it;
-                            cout << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << "]" << endl;
+                            cout << currentMachinePtr->getName() << "]" << endl;
                             break;
                         }
                     }
@@ -291,7 +292,7 @@ public:
         if (!(currentMachinePtr->getId() == p)) {
             cout << "Machine Does Not Exist" << endl; return nullptr;
         }
-        cout << "Origin Machine Found: [" << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << "]" << endl;
+        cout << "Origin Machine Found: [" << currentMachinePtr->getName() << "]" << endl;
         cout << "Starting Search For The File With Id: " << e << " ."; this_thread::sleep_for(chrono::seconds(1));
         cout << "."; this_thread::sleep_for(chrono::seconds(1)); cout << "." << endl;
         // now we have the pointer to the machine from which the request has to be generated.
@@ -308,38 +309,38 @@ public:
                 break;
             }
             else if (e > p && e <= currentMachinePtr->getRoutingTable().front()->getId()) { // the next machine contains the file
-                cout << "Control Passed From [" << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << "] To [";
+                cout << "Control Passed From [" << currentMachinePtr->getName() << "] To [";
                 currentMachinePtr = currentMachinePtr->getRoutingTable().front();
-                cout << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << "]" << endl;
+                cout << currentMachinePtr->getName() << "]" << endl;
                 break;
             }
             else if ((p > currentMachinePtr->getRoutingTable().front()->getId()) && (e > p || e <= currentMachinePtr->getRoutingTable().front()->getId())) { // the case where the next machine is the head
                 // here we consider two cases. one in which e is greater than current. and another where e is less than or equal to the head
-                cout << "Control Passed From [" << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << "] To [";
+                cout << "Control Passed From [" << currentMachinePtr->getName() << "] To [";
                 currentMachinePtr = currentMachinePtr->getRoutingTable().front();
-                cout << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << "]" << endl;
+                cout << currentMachinePtr->getName() << "]" << endl;
                 break;
             }
             else {
-                cout << "Traversing The Routing Table Of Machine: [" << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << "]" << endl;
+                cout << "Traversing The Routing Table Of Machine: [" << currentMachinePtr->getName() << "]" << endl;
                 for (DoublyLinkedList<Machine*>::Iterator it = currentMachinePtr->getRoutingTable().begin(); it != currentMachinePtr->getRoutingTable().end(); ++it) {
                     if (it + 1 == nullptr) { // not found in the routing table. we point to the last entry in the routing table
-                        cout << "Control Passed From [" << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << "] To [";
+                        cout << "Control Passed From [" << currentMachinePtr->getName() << "] To [";
                         currentMachinePtr = *it;
-                        cout << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << "]" << endl;
+                        cout << currentMachinePtr->getName() << "]" << endl;
                         break;
                     }
                     else {
                         if (e > (*it)->getId() && (*it)->getId() > (it + 1)->data->getId()) { // the case the where the next machine is the head
-                            cout << "Control Passed From [" << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << "] To [";
+                            cout << "Control Passed From [" << currentMachinePtr->getName() << "] To [";
                             currentMachinePtr = *it;
-                            cout << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << "]" << endl;
+                            cout << currentMachinePtr->getName() << "]" << endl;
                             break;
                         }
                         if (e > (*it)->getId() && e <= (it + 1)->data->getId()) { // file found in this range
-                            cout << "Control Passed From [" << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << "] To [";
+                            cout << "Control Passed From [" << currentMachinePtr->getName() << "] To [";
                             currentMachinePtr = *it;
-                            cout << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << "]" << endl;
+                            cout << currentMachinePtr->getName() << "]" << endl;
                             break;
                         }
                     }
@@ -347,7 +348,7 @@ public:
             }
             p = currentMachinePtr->getId();
         }
-        cout << "Machine Found Which Has This File: [" << currentMachinePtr->getName() << "_" << currentMachinePtr->getId() << "]" << endl;
+        cout << "Machine Found Which Has This File: [" << currentMachinePtr->getName() << "]" << endl;
         // till here we have reached the machine where the actual file is stored
         return currentMachinePtr;
     }
@@ -420,6 +421,7 @@ public:
         Machine* machine = routerSearch(machineId, machineId);
         if (machine) {
             machine->printRoutingTable();
+            cout << endl;
         }
     }
     void printBtree() {
@@ -457,6 +459,7 @@ public:
     ~DHT() {
         this->ring.makenull();
         handle.removeFolder("D:\\storage\\DHT");
+        handle.removeFolder("D:\\storage");
     }
 };
 

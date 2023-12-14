@@ -111,7 +111,7 @@ public:
 	
 	Machine(BIG_INT id, string name = "", int treeDegree = 3) {
 		this->id = id;
-		this->name = name;
+		this->name = name + "_" + id.getBIG_INT();
 		this->indexTree.setDegree(treeDegree); // to be taken by the user
 	}
 	BIG_INT getId() const {

@@ -12,6 +12,14 @@
 #include "sha1.hpp"
 using namespace std;
 
+// the whole dht class which fulfills all the functionality of a dht including:
+/*
+1. adding machine
+2. removing machine
+3. adding file
+4. removing file
+5. searching file
+*/
 
 class DHT
 {

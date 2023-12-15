@@ -99,7 +99,7 @@ public:
         if (!empty()) return arr[0];
         return T();
     }
-   //removes the element at the end of the list
+    //removes the element at the end of the list
     void pop() {
         if (empty()) {
             return;
@@ -150,7 +150,7 @@ public:
         }
         return -1;
     }
-   //overloading the ostream operator to print the list
+    //overloading the ostream operator to print the list
     friend ostream& operator<<(ostream& out, ArrayBasedList& l) {
         for (int i = 0; i <= l.currentPtr; i++) {
             out << l.arr[i] << " ";
@@ -158,11 +158,11 @@ public:
         out << endl;
         return out;
     }
-   //overloading the subscript operator
+    //overloading the subscript operator
     T operator[](int index) const {
         return arr[index];
     }
-   //destructor
+    //destructor
     ~ArrayBasedList() {
         delete[] arr;
     }

@@ -7,7 +7,7 @@
 using namespace std;
 
 /*
-a data structure designed to handle the storage and operations of large numbers which cannot be stored in C++ primitive 
+a data structure designed to handle the storage and operations of large numbers which cannot be stored in C++ primitive
 types. capable of handling huge numbers efficiently.
 supports addition subtraction multiplication and modulus operations together with comparision operations too.
 */
@@ -168,7 +168,7 @@ public:
         int i = 0;
         while (i < res.size() && res[i] == '0') i++;
         return BIG_INT(res.substr(i));
-    
+
     }
     bool operator<(const BIG_INT& other)
     {

@@ -74,7 +74,7 @@ public:
 				sys.removeMachine(BIG_INT(id));
 				break;
 			case 4:
-				 // Add a file to the DHT system
+				// Add a file to the DHT system
 				cout << "Enter the complete path of the file: "; getline(cin, path);
 				sys.addFile(path);
 				break;

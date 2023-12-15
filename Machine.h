@@ -45,7 +45,7 @@ class Machine
 	DoublyLinkedList<Machine*> router;
 
 	// some private functions
-        //extracts file extension from file name
+		//extracts file extension from file name
 	string getExtension(const string filename) {
 		string res; int i;
 		for (i = filename.length() - 1; i >= 0; i--) {
@@ -57,7 +57,7 @@ class Machine
 		return res;
 	}
 
-        //visualizes the BTree and saves it as an image
+	//visualizes the BTree and saves it as an image
 	void visualizeTree(const string& dotCode)
 	{
 		ofstream dotFile("btree.dot");
@@ -67,7 +67,7 @@ class Machine
 		system(command.c_str());
 		system("start btree.png");
 	}
-        //generates dot code for the BTree
+	//generates dot code for the BTree
 	string generateDotCode(BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>* btreeRoot)
 	{
 		string dotCode = "digraph BTree {\n";
@@ -109,7 +109,7 @@ class Machine
 	}
 
 public:
-	
+
 	Machine(BIG_INT id, string name = "", int treeDegree = 3) {
 		this->id = id;
 		this->name = name + "_" + id.getBIG_INT();
@@ -137,7 +137,7 @@ public:
 		out << m.getId();
 		return out;
 	}
-         //returns the root of BTree
+	//returns the root of BTree
 	BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>* getBtreeHead() {
 		return indexTree.getRoot();
 	}
@@ -145,19 +145,19 @@ public:
 	string getName() {
 		return this->name;
 	}
-         //adds a machine entry to the routing table
+	//adds a machine entry to the routing table
 	void addRoutingTableEntry(Machine* val) {
 		router.push(val);
 	}
-        //destroys the routing table
+	//destroys the routing table
 	void destroyRoutingTable() {
 		router.makenull();
 	}
-        //getter for routing table
+	//getter for routing table
 	DoublyLinkedList<Machine*>& getRoutingTable() {
 		return router;
 	}
-        //prints the routing table
+	//prints the routing table
 	void printRoutingTable() {
 		for (DoublyLinkedList<Machine*>::Iterator it = router.begin(); it != router.end(); ++it) {
 			if (it + 1 != nullptr) {
@@ -170,7 +170,7 @@ public:
 	}
 
 	void addFile(BIG_INT id, string extension, const string filepath) {
-		KeyValuePair<BIG_INT, LinkedList<string>> data; data.key = id; 
+		KeyValuePair<BIG_INT, LinkedList<string>> data; data.key = id;
 		handle.createFolderIfNotExists("D:\\storage\\DHT\\" + name + "\\" + id.getBIG_INT());
 		string path = "D:\\storage\\DHT\\" + name + "\\" + id.getBIG_INT() + "\\";
 		Pair<BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>*, int, int> res = indexTree.search(data);
@@ -227,13 +227,13 @@ public:
 			}
 		}
 	}
-          //searches for file in the system
+	//searches for file in the system
 	Pair<BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>*, int, int> searchFile(BIG_INT id) {
 		KeyValuePair<BIG_INT, LinkedList<string>> data; data.key = id;
 		Pair<BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>*, int, int> res = indexTree.search(data);
 		return res;
 	}
-       //prints the BTree
+	//prints the BTree
 	void printBtree() {
 		if (this->indexTree.getRoot() == nullptr) {
 			cout << "Tree is empty" << endl;
@@ -261,7 +261,7 @@ public:
 		}
 		visualizeTree(generateDotCode(indexTree.getRoot()));
 	}
-         
+
 	void shiftFiles(char mode, Machine& other) {
 		if (mode == 'i') { // if insert is mode then we add other's files with id e where e <= currentMachineId
 			if (other.indexTree.getRoot() == nullptr) return;
@@ -279,7 +279,7 @@ public:
 				for (int i = 0; i < current->keys.getSize(); i++)
 				{
 					if (thisId < nextId) { // the case where the next machine is not head
-						if (current->keys[i].key <= thisId) {
+						if (current->keys[i].key <= thisId || current->keys[i].key > nextId) {
 							// here we need to move files too but that is later work
 							dataToBeDeleted.push(current->keys[i]);
 							for (LinkedList<string>::Iterator it = current->keys[i].value.begin(); it != current->keys[i].value.end(); ++it) {
@@ -299,7 +299,7 @@ public:
 						}
 					}
 				}
-				
+
 				for (size_t i = 0; i < current->children.getSize(); ++i)
 				{
 					levelOrderQueue.enqueue(current->children[i]);
@@ -325,7 +325,7 @@ public:
 					for (LinkedList<string>::Iterator it = current->keys[i].value.begin(); it != current->keys[i].value.end(); ++it) {
 						other.addFile(current->keys[i].key, getExtension(*it), *it);
 					}
-					
+
 				}
 
 				for (size_t i = 0; i < current->children.getSize(); ++i)

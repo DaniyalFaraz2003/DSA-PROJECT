@@ -12,6 +12,7 @@
 using namespace std;
 
 
+
 int main() {
 	System sys; sys.start();
 	return 0;

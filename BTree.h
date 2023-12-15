@@ -6,6 +6,13 @@
 #include "ArrayBasedList.h"
 using namespace std;
 
+/*
+the standard BTree class designed for storage of indexes represented as key value pairs. customizable by giving the order
+in the constructor according to the page sizes of the disk.
+
+supports insertion deletion and searching as according to the normal BTree operations
+*/
+
 
 template <typename T, typename U, typename V>
 struct Pair {
@@ -66,7 +73,7 @@ public:
             return search(key, node->children[i], i);
         }
     }
-   //function to search for the insertion position of a key
+    //function to search for the insertion position of a key
     Pair<BTreeNode<T>*, int, int> searchForInsert(T key, BTreeNode<T>* node = nullptr, int childIndex = 0)
     {
         node = (node == nullptr) ? root : node;
@@ -191,17 +198,19 @@ public:
         Pair<BTreeNode<T>*, int, int> res = search(val);
         if (res.first == nullptr)
             return;
-         //if node is a leaf and not the root 
+        //if node is a leaf and not the root 
         if (!res.first->p && res.first->leaf) {
             res.first->keys.deleteItem(res.second);
         }
         else if (res.first->leaf)
         {   //if the node is a leaf
             deleteFromLeaf(res.first, res.second, res.third);
+            root->p = nullptr;
         }
         else
         {   //when its an internal node
             deleteInternalNode(res.first, res.second, res.third);
+            root->p = nullptr;
         }
     }
 
@@ -489,9 +498,9 @@ public:
             }
         }
     }
-   //destructor for BTree
+    //destructor for BTree
     ~BTree() {
- 
+
         BTreeNode<T>* rootnode = getRoot();
         if (rootnode == nullptr) return;
         Queue<BTreeNode<T>*> q;
@@ -507,4 +516,3 @@ public:
         }
     }
 };
-

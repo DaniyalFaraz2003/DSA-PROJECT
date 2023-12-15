@@ -6,6 +6,12 @@
 #include <iostream>
 using namespace std;
 
+/*
+A robust class designed to simulate the functionalities of the in built vector class of standard C++ library
+provides all necessary functionality for a list and can behave like both a stack and a queue.
+the array based approach made it easier for direct access of elements through the [] operator.
+*/
+
 template<class T>
 class ArrayBasedList {
 private:

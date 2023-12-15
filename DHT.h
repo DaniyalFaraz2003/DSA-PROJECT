@@ -40,18 +40,21 @@ public:
             ring.insertSorted(Machine(BIG_INT(to_string(i)), to_string(i)));
         }*/
 	}
+     //sets the bit size of the identifier space
     bool setBitSize(int bitSize) {
-        if (bitSize > 0 && bitSize < 161) {
+        if (bitSize > 0 && bitSize < 161) {        //ensures the bit size is within a valid range
             this->identifierSpace = bitSize;
             return true;
         }
         else return false;
-    }
+    }   //creates routing tables for all machines in the DHT
 	void makeRoutingTables() {
-        if (ring.isEmpty()) return;
+        if (ring.isEmpty()) return;  //if the DHT is empty, routing table is not updated
+	//updation of routing tables	
         cout << "Updating Routing Tables"; this_thread::sleep_for(chrono::seconds(1)); cout << "."; this_thread::sleep_for(chrono::seconds(1));
         cout << "."; this_thread::sleep_for(chrono::seconds(1)); cout << "." << endl;
 		CircleListNode<Machine>* start = ring.head;
+	//if there is only one machine, then it should have its routing table entries pointing to itself
         if (start->next == ring.head) {
             for (int i = 0; i < identifierSpace; i++) {
                 start->data.addRoutingTableEntry(&(start->data));
@@ -62,14 +65,16 @@ public:
 		{
 			// here we create the routing table of every machine
 			for (int i = 0; i < identifierSpace; i++) {
+				//we calculate the ID of the next machine in the routing table
 				BIG_INT nextMachineId = (start->data.getId() + power(BIG_INT("2"), i)) % power(BIG_INT("2"), identifierSpace);
 				CircleListNode<Machine>* probe = ring.head;
 				while (probe->data.getId() < nextMachineId) {
-					
+					//case in which the next machine is the last in DHT
 					if (nextMachineId > probe->data.getId() && probe->next == ring.head) {
 						probe = probe->next; break;
 					}
 					else {
+			  //case in which the next machine is found within the DHT
                         if (nextMachineId >= probe->data.getId() && nextMachineId <= probe->next->data.getId()) {
                             probe = probe->next; break;
                         }
@@ -78,19 +83,24 @@ public:
                         }
 					}
 				}
+				//add the machine in the current machine's routing table
 				start->data.addRoutingTableEntry(&(probe->data));
 			}
-			start = start->next;
+			start = start->next;  //moving on to the next machine
 		}
+		//handling routing table entries for the last machine
 		for (int i = 0; i < identifierSpace; i++) {
+			//calculating the ID of next machine
 			BIG_INT nextMachineId = (start->data.getId() + power(BIG_INT("2"), i)) % power(BIG_INT("2"), identifierSpace);
+			//finding the next machine
 			CircleListNode<Machine>* probe = start->next;
 			while (probe->data.getId() <= nextMachineId) {
-
+                 //case in which the next machine is last
                 if (nextMachineId > probe->data.getId() && probe->next == ring.head) {
                     probe = probe->next; break;
                 }
                 else {
+		    //case in which the next machine is found within the DHT
                     if (nextMachineId >= probe->data.getId() && nextMachineId <= probe->next->data.getId()) {
                         probe = probe->next; break;
                     }
@@ -99,15 +109,18 @@ public:
                     }
                 }
 			}
+			//adding the machine found to the last machine's routing table
 			start->data.addRoutingTableEntry(&(probe->data));
 		}
         cout << "Routing Tables Updated Successfully" << endl;
 	}
     void showMachines() {
+	//checks if the DHT is empty
         if (ring.isEmpty()) {
             cout << "DHT Is Empty" << endl;
             return;
         }
+	//initializing the dot code string for visualization
         std::string dotCode = "graph CircularLinkedList {\n";
         CircleListNode<Machine>* current = ring.head;
 
@@ -115,7 +128,7 @@ public:
         dotCode += "  graph [layout=neato];\n";
 
         while (current->next != ring.head) {
-            // Add a node for each element
+            // Add a node for each element in the dot code
             dotCode += "  " + current->data.getId().getBIG_INT() + " -- ";
 
             current = current->next;
@@ -125,18 +138,19 @@ public:
         dotCode += "  " + current->data.getId().getBIG_INT() + " -- " + ring.head->data.getId().getBIG_INT() + " [label=\"\", shape=circle];\n";
         dotCode += "}\n";
 
-
+        //write the dot code to a file named "dht.dot"
         ofstream dotFile("dht.dot");
         dotFile << dotCode;
         dotFile.close();
+	//generates a png image from the dot file 
         string command = "neato -Tpng -Gsplines=true dht.dot -o dht.png";
         system(command.c_str());
         system("start dht.png");
         
     }
 
-    void insertMachine() { // this has to be changed for the future
-        // changes to make are to make a folder for a new machine and divide machineId e the files in the machines
+    void insertMachine() { 
+	//checks if the DHT is full
         if (BIG_INT(to_string(ring.getSize())) == power(BIG_INT("2"), identifierSpace)) {
             cout << "DHT is full no more machines can be added" << endl; return;
         }
@@ -146,15 +160,19 @@ public:
         cout << "You want to manually assign id to this machine? (y for yes): "; cin >> idChoice;
         cin.ignore();
         if (idChoice != 'y') {
+	   //automatically generates an ID based on the machine name using SHA1 hashing
             SHA1 digest; digest.update(machineName); hash = digest.final(); machineId = hashMod(hash, identifierSpace);
+	  //check if a machine with the generated ID already exists
             while (ring.exists(Machine(machineId))) {
                 cout << "Machine already exists enter name again: "; getline(cin, machineName);
                 digest.update(machineName); hash = digest.final(); machineId = hashMod(hash, identifierSpace);
             }
         }
         else {
+	    //manually assign an ID entered by the user
             cout << "Enter the id you want to assign to this machine: ";
             getline(cin, hash); machineId = BIG_INT(hash);
+	     //validating the machine ID
             while (validateId(machineId)) {
                 if (ring.exists(Machine(machineId))) {
                     cout << "Machine already exists, enter again: ";
@@ -168,10 +186,11 @@ public:
 
         }
         cout << "Enter the degree of the B-Tree you want for this machine: "; cin >> treeDegree;
-        while (treeDegree < 3) {
+        while (treeDegree < 3) {  //ensures the degree of BTree is valid
             cout << "Invalid tree degree, enter again: "; cin >> treeDegree;
         }
         cin.ignore();
+	//insert the new machine into the DHT's circular linked list and update routing tables
         ring.insertSorted(Machine(machineId, machineName, treeDegree)); // here we update the Btrees too. and to make a folder in the system for this machine
         makeRoutingTables();
         CircleListNode<Machine>* current = ring.head;
@@ -183,14 +202,16 @@ public:
         current->data.shiftFiles('i', current->next->data);
         cout << "Machine Inserted With Name: " << machineName << endl; cout << "Id Assigned To This Machine: " << machineId.getBIG_INT() << endl;
     }
-    void removeMachine(BIG_INT id) { // implementation to be done.
+    void removeMachine(BIG_INT id) { 
+	//checks if the DHT is empty
         if (ring.isEmpty()) {
             cout << "No machines in the system" << endl; return;
         }
+	//checks if the machine with the given ID exists in the DHT
         if (!ring.exists(Machine(id))) {
             cout << "Machine does not exist" << endl;
             return;
-        }
+        } //if there is only one machine in the DHT, we remove it 
         if (ring.getSize() == 1) {
             ring.pop(); cout << "machine removed" << endl;
             return;
@@ -198,37 +219,40 @@ public:
         destroyRoutingTables();
         int i = 0;
         CircleListNode<Machine>* current = ring.head;
-        while (!(current->data.getId() == id)) {
+        while (!(current->data.getId() == id)) {   //locating the machine with the specified ID 
             current = current->next;
             i++;
         }
-        current->data.shiftFiles('d', current->next->data);
-        handle.removeFolder("D:\\storage\\DHT\\" + current->data.getName());
+        current->data.shiftFiles('d', current->next->data);  //shift files to the next machine and update BTrees too
+        handle.removeFolder("D:\\storage\\DHT\\" + current->data.getName());  //removing the directory associated with the machine
         ring.delete_from_index(i);
         makeRoutingTables();
-        // here we also remove the directory of the machine
+
         cout << "machine removed" << endl;
     }
-
+    //function to destroy routing tables of machines in DHT
     void destroyRoutingTables() {
         if (ring.isEmpty()) return;
         CircleListNode<Machine>* curr = ring.head;
+	//traverse the circular linked list and destroy routing tables of each machine
         while (curr->next != ring.head) {
             curr->data.destroyRoutingTable();
             curr = curr->next;
         }
-        curr->data.destroyRoutingTable();
+        curr->data.destroyRoutingTable();  //destroying the routing table of the last machine
     }
-
+    
+    //function to search for a machine in the DHT based on file ID 'e' and machine ID 'p'
     Machine* routerSearch(BIG_INT& e, BIG_INT& p) {
         if (ring.isEmpty()) {
             cout << "DHT Is Empty" << endl;
             return nullptr;
         }
+	 //validation of the input IDs
         if (!e.validate() || e.getBIG_INT()[0] == '-' || e >= power(BIG_INT("2"), identifierSpace)) return nullptr;
         else if (!p.validate() || p.getBIG_INT()[0] == '-' || p >= power(BIG_INT("2"), identifierSpace)) return nullptr;
         if (ring.head == ring.head->next) {
-            if (p == ring.head->data.getId()) { // this means the machine is there and is the only machine in the system
+            if (p == ring.head->data.getId()) { // this means the machine is there and is the only machine in the system, check if it matches with the specifies ID
                 return &ring.head->data;
             }
             else {
@@ -236,35 +260,37 @@ public:
                 return nullptr;
             }
         }
-        // first step is to find the machine from which the request has to be generated.
+        //displaying a message indicating the start of the search
         cout << "Finding The Origin Machine"; this_thread::sleep_for(chrono::seconds(1)); cout << "."; this_thread::sleep_for(chrono::seconds(1)); cout << ".";
         this_thread::sleep_for(chrono::seconds(1)); cout << "." << endl;
         Machine* currentMachinePtr = &ring.head->data;
         cout << "Control Passed To The Head Machine: " << currentMachinePtr->getName() << endl;
+	//traverse the DHT to find the origin machine
         while (!(p == currentMachinePtr->getId())) {
             this_thread::sleep_for(chrono::seconds(1));
+	     //check if the starting ID is less than the current machine's ID and the current machine is the head
             if (p < currentMachinePtr->getId() && currentMachinePtr == &ring.head->data) {
                 break;
-            }
+            }  //check if the starting ID is greater than the current machine's ID and less than or equal to the next machine's ID
             else if (p > currentMachinePtr->getId() && p <= currentMachinePtr->getRoutingTable().front()->getId()) {
                 cout << "Control Passed From [" << currentMachinePtr->getName() << "] To [";
                 currentMachinePtr = currentMachinePtr->getRoutingTable().front();
                 cout << currentMachinePtr->getName() << "]" << endl;
                 break;
-            }
-            else if (p > currentMachinePtr->getId() && currentMachinePtr->getRoutingTable().front()->getId() < currentMachinePtr->getId()) { // case where next is head
+            } //check if the starting ID is greater than the current machine's ID, and the next machine is the head
+            else if (p > currentMachinePtr->getId() && currentMachinePtr->getRoutingTable().front()->getId() < currentMachinePtr->getId()) { 
                 cout << "Control Passed From [" << currentMachinePtr->getName() << "] To [";
                 currentMachinePtr = currentMachinePtr->getRoutingTable().front();
                 cout << currentMachinePtr->getName() << "]" << endl;
                 break;
-            }
+            } //check if the starting ID is less than the current machine's ID, and the next machine is the head
             else if (p < currentMachinePtr->getId() && currentMachinePtr->getRoutingTable().front()->getId() < currentMachinePtr->getId()) { // case where next is head
                 cout << "Control Passed From [" << currentMachinePtr->getName() << "] To [";
                 currentMachinePtr = currentMachinePtr->getRoutingTable().front();
                 cout << currentMachinePtr->getName() << "]" << endl;
                 break;
             }
-            else {
+            else { //traversing the routing table of the current machine
                 cout << "Traversing The Routing Table Of Machine: [" << currentMachinePtr->getName() << "]" << endl;
                 for (DoublyLinkedList<Machine*>::Iterator it = currentMachinePtr->getRoutingTable().begin(); it != currentMachinePtr->getRoutingTable().end(); ++it) {
                     if (it + 1 == nullptr) {
@@ -298,7 +324,7 @@ public:
             }
         }
         if (!(currentMachinePtr->getId() == p)) {
-            cout << "Machine Does Not Exist" << endl; return nullptr;
+            cout << "Machine Does Not Exist" << endl; return nullptr;   //check if the origin machine has been found
         }
         cout << "Origin Machine Found: [" << currentMachinePtr->getName() << "]" << endl;
         cout << "Starting Search For The File With Id: " << e << " ."; this_thread::sleep_for(chrono::seconds(1));
@@ -363,6 +389,7 @@ public:
 
     void searchFile(BIG_INT& e, BIG_INT& p) { // here we implement the search algorithm using the routing tables.
         Machine* machine = routerSearch(e, p);
+	 //check if the machine is found
         if (machine == nullptr) {
             cout << "No Machine With Id: " << p.getBIG_INT() << endl;
             return;
@@ -370,6 +397,7 @@ public:
         this_thread::sleep_for(chrono::seconds(1));
         cout << "Going In The BTree Of Machine [" << machine->getName() << "_" << machine->getId() << "] .";
         this_thread::sleep_for(chrono::seconds(1)); cout << "."; this_thread::sleep_for(chrono::seconds(1)); cout << "." << endl;
+	  //search for the file with ID 'e' in the B-tree of the found machine
         Pair<BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>*, int, int> searchResult = machine->searchFile(e);
         if (searchResult.first == nullptr) {
             cout << "No Such File In The System" << endl;
@@ -377,26 +405,28 @@ public:
         else {
             int count = 0;
             cout << "The Files With Id " << e.getBIG_INT() << " are: " << endl;
+	     //display the list of files with the specified ID
             for (LinkedList<string>::Iterator it = searchResult.first->keys[searchResult.second].value.begin(); it != searchResult.first->keys[searchResult.second].value.end(); ++it) {
                 cout << ++count << ". " << *it << endl;
             }
         }
     }
-    void addFile(const string& path) {
-        if (ring.isEmpty()) {
+    void addFile(const string& path) {     //here we add a file in the system
+        if (ring.isEmpty()) {      //check if the DHT is empty
             cout << "DHT Is Empty" << endl; return;
         }
         cout << "Starting To Add File [" << path << "] To The System.";
         this_thread::sleep_for(chrono::seconds(1)); cout << "."; this_thread::sleep_for(chrono::seconds(1)); cout << '.' << endl;
         ifstream file(path);
-        if (file.is_open()) {
-            BIG_INT p = ring.head->data.getId();
+        if (file.is_open()) {  //check if the file is open
+            BIG_INT p = ring.head->data.getId(); //set the starting machine ID to the ID of the head machine in the DHT
+	     //calculate the file ID based on the SHA-1 hash of the file content
             string hash = SHA1::from_file(path);
             BIG_INT e = hashMod(hash, identifierSpace);
             cout << "File Assigned The Id Of: " << e.getBIG_INT() << endl;
-            Machine* machine = routerSearch(e, p);
+            Machine* machine = routerSearch(e, p);  //use routerSearch to find the machine where the file should be inserted
             if (machine) {
-                machine->addFile(e, ext(path), path);
+                machine->addFile(e, ext(path), path);   //add the file to the found machine's B-tree
                 cout << "File Inserted In the System With Id: " << e.getBIG_INT() << endl;
             }
             else {
@@ -409,13 +439,13 @@ public:
         }
         
     }
-    void printRoutingTable() {
+    void printRoutingTable() {    //function to print the routing table
         if (ring.isEmpty()) {
             cout << "DHT Is Empty" << endl; return;
-        }
-        string id; cout << "Enter The Id Of The Machine You Want To Print The Routing Table Of: "; getline(cin, id);
+        } 
+        string id; cout << "Enter The Id Of The Machine You Want To Print The Routing Table Of: "; getline(cin, id);  //Get the ID of the machine from the user
         BIG_INT machineId(id);
-        while (validateId(machineId)) {
+        while (validateId(machineId)) {       // Validate the entered ID
             if (ring.exists(Machine(id))) {
                 break;
             }
@@ -426,13 +456,13 @@ public:
             machineId = BIG_INT(id);
         }
         BIG_INT startId = ring.head->data.getId();
-        Machine* machine = routerSearch(machineId, machineId);
+        Machine* machine = routerSearch(machineId, machineId);  //Use routerSearch to find the machine with the specified ID
         if (machine) {
             machine->printRoutingTable();
             cout << endl;
         }
     }
-    void printBtree() {
+    void printBtree() {   // Function to print the B-tree of a specified machine
         if (ring.isEmpty()) {
             cout << "DHT Is Empty" << endl; return;
         }
@@ -449,22 +479,22 @@ public:
             machineId = BIG_INT(id);
         }
         BIG_INT startId = ring.head->data.getId();
-        Machine* machine = routerSearch(machineId, machineId);
+        Machine* machine = routerSearch(machineId, machineId);  // Use routerSearch to find the machine with the specified ID
         if (machine) {
             machine->printBtree();
         }
     }
-    void removeFile(BIG_INT e) {
+    void removeFile(BIG_INT e) {   //Function to remove a file with a specified ID from the DHT
         if (ring.isEmpty()) {
             cout << "DHT Is Empty" << endl; return;
         }
         cout << "Starting To Remove The File With Id: " << e; this_thread::sleep_for(chrono::seconds(1)); cout << ".";
         this_thread::sleep_for(chrono::seconds(1)); cout << "."; this_thread::sleep_for(chrono::seconds(1)); cout << "." << endl;
-        BIG_INT p = ring.head->data.getId();
-        Machine* machine = routerSearch(e, p);
+        BIG_INT p = ring.head->data.getId(); //Set the starting machine ID to the ID of the head machine in the DHT
+        Machine* machine = routerSearch(e, p); //Use routerSearch to find the machine where the file with ID 'e' is located
         machine->removeFile(e);
     }
-    ~DHT() {
+    ~DHT() {  //destructor in which the directories are removed too
         this->ring.makenull();
         handle.removeFolder("D:\\storage\\DHT");
         handle.removeFolder("D:\\storage");

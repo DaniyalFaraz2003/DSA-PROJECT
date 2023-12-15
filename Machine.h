@@ -45,6 +45,7 @@ class Machine
 	DoublyLinkedList<Machine*> router;
 
 	// some private functions
+        //extracts file extension from file name
 	string getExtension(const string filename) {
 		string res; int i;
 		for (i = filename.length() - 1; i >= 0; i--) {
@@ -56,7 +57,7 @@ class Machine
 		return res;
 	}
 
-
+        //visualizes the BTree and saves it as an image
 	void visualizeTree(const string& dotCode)
 	{
 		ofstream dotFile("btree.dot");
@@ -66,7 +67,7 @@ class Machine
 		system(command.c_str());
 		system("start btree.png");
 	}
-
+        //generates dot code for the BTree
 	string generateDotCode(BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>* btreeRoot)
 	{
 		string dotCode = "digraph BTree {\n";
@@ -116,7 +117,7 @@ public:
 	}
 	BIG_INT getId() const {
 		return this->id;
-	}
+	}  //overloading comparison operators
 	bool operator<(const Machine& other) {
 		return this->getId() < other.getId();
 	}
@@ -136,7 +137,7 @@ public:
 		out << m.getId();
 		return out;
 	}
-
+         //returns the root of BTree
 	BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>* getBtreeHead() {
 		return indexTree.getRoot();
 	}
@@ -144,19 +145,19 @@ public:
 	string getName() {
 		return this->name;
 	}
-
+         //adds a machine entry to the routing table
 	void addRoutingTableEntry(Machine* val) {
 		router.push(val);
 	}
-
+        //destroys the routing table
 	void destroyRoutingTable() {
 		router.makenull();
 	}
-
+        //getter for routing table
 	DoublyLinkedList<Machine*>& getRoutingTable() {
 		return router;
 	}
-
+        //prints the routing table
 	void printRoutingTable() {
 		for (DoublyLinkedList<Machine*>::Iterator it = router.begin(); it != router.end(); ++it) {
 			if (it + 1 != nullptr) {
@@ -226,13 +227,13 @@ public:
 			}
 		}
 	}
-
+          //searches for file in the system
 	Pair<BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>*, int, int> searchFile(BIG_INT id) {
 		KeyValuePair<BIG_INT, LinkedList<string>> data; data.key = id;
 		Pair<BTreeNode<KeyValuePair<BIG_INT, LinkedList<string>>>*, int, int> res = indexTree.search(data);
 		return res;
 	}
-
+       //prints the BTree
 	void printBtree() {
 		if (this->indexTree.getRoot() == nullptr) {
 			cout << "Tree is empty" << endl;
@@ -260,7 +261,7 @@ public:
 		}
 		visualizeTree(generateDotCode(indexTree.getRoot()));
 	}
-
+         
 	void shiftFiles(char mode, Machine& other) {
 		if (mode == 'i') { // if insert is mode then we add other's files with id e where e <= currentMachineId
 			if (other.indexTree.getRoot() == nullptr) return;

@@ -6,6 +6,12 @@
 #include <string>
 using namespace std;
 
+/*
+a data structure designed to handle the storage and operations of large numbers which cannot be stored in C++ primitive 
+types. capable of handling huge numbers efficiently.
+supports addition subtraction multiplication and modulus operations together with comparision operations too.
+*/
+
 class BIG_INT
 {
 private:
